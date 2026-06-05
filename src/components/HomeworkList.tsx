@@ -22,8 +22,8 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
   const getDueDateStatus = (dateStr: string, completed: boolean) => {
     if (completed) {
       return {
-        text: 'text-slate-400',
-        bg: 'bg-slate-50',
+        text: 'text-slate-400 dark:text-slate-500',
+        bg: 'bg-slate-50 dark:bg-slate-900/50',
         status: 'completed',
       };
     }
@@ -34,23 +34,23 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
 
     if (dueDate < today) {
       return {
-        text: 'text-red-600 font-medium',
-        bg: 'bg-red-50',
+        text: 'text-red-600 dark:text-red-400 font-medium',
+        bg: 'bg-red-50 dark:bg-red-500/10',
         status: 'overdue',
         label: 'Overdue',
       };
     } else if (dueDate.getTime() === today.getTime()) {
       return {
-        text: 'text-amber-600 font-medium',
-        bg: 'bg-amber-50',
+        text: 'text-amber-600 dark:text-amber-400 font-medium',
+        bg: 'bg-amber-50 dark:bg-amber-500/10',
         status: 'today',
         label: 'Due today',
       };
     }
 
     return {
-      text: 'text-slate-500',
-      bg: 'bg-slate-50',
+      text: 'text-slate-500 dark:text-slate-400',
+      bg: 'bg-slate-50 dark:bg-slate-800/40',
       status: 'upcoming',
     };
   };
@@ -73,21 +73,21 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
   const getPriorityBadge = (priority: Homework['priority']) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-50 text-red-700 border-red-100';
+        return 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20';
       case 'medium':
-        return 'bg-amber-50 text-amber-700 border-amber-100';
+        return 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20';
       case 'low':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+        return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20';
     }
   };
 
   return (
     <div className="space-y-3.5">
       {homework.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-          <CheckCircle2 className="h-10 w-10 text-slate-300 mb-3" />
-          <h3 className="font-semibold text-slate-700 text-lg">All caught up!</h3>
-          <p className="text-slate-500 text-sm max-w-xs mt-1">No homework found for this selection. Have a great day!</p>
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+          <CheckCircle2 className="h-10 w-10 text-slate-300 dark:text-slate-700 mb-3" />
+          <h3 className="font-semibold text-slate-700 dark:text-slate-300 text-lg">All caught up!</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mt-1">No homework found for this selection. Have a great day!</p>
         </div>
       ) : (
         homework.map((item) => {
@@ -99,8 +99,10 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
               key={item.id}
               onClick={() => onSelectTask?.(item)}
               className={cn(
-                'group flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 transition-all duration-200 hover:border-slate-200 hover:shadow-sm cursor-pointer active:scale-[0.995]',
-                item.completed && 'bg-slate-50/50 border-slate-50'
+                'group flex items-center justify-between p-4 rounded-xl border transition-all duration-200 hover:shadow-sm cursor-pointer active:scale-[0.995]',
+                item.completed
+                  ? 'bg-slate-50/50 dark:bg-slate-950/40 border-slate-50 dark:border-slate-900'
+                  : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
               )}
             >
               <div className="flex items-center space-x-3.5 flex-1 min-w-0">
@@ -114,7 +116,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     'flex items-center justify-center w-5.5 h-5.5 rounded-md border-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
                     item.completed
                       ? 'bg-indigo-600 border-indigo-600 text-white'
-                      : 'border-slate-300 hover:border-slate-400'
+                      : 'border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
                   )}
                 >
                   {item.completed && <CheckCircle2 size={14} className="stroke-[3]" />}
@@ -124,14 +126,16 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                   <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                     <h5
                       className={cn(
-                        'font-semibold text-slate-800 text-sm sm:text-base leading-snug truncate',
-                        item.completed && 'line-through text-slate-400 font-normal'
+                        'text-sm sm:text-base leading-snug truncate',
+                        item.completed
+                          ? 'line-through text-slate-400 dark:text-slate-500 font-normal'
+                          : 'font-semibold text-slate-800 dark:text-slate-100'
                       )}
                     >
                       {item.title}
                     </h5>
                     {subject && (
-                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase tracking-wider">
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 uppercase tracking-wider">
                         {subject.name}
                       </span>
                     )}
@@ -141,7 +145,16 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                   </div>
 
                   {item.description && (
-                    <p className={cn('text-xs text-slate-500 mt-1 max-w-lg truncate', item.completed && 'text-slate-400/80')}>{item.description}</p>
+                    <p 
+                      className={cn(
+                        'text-xs mt-1 max-w-lg truncate', 
+                        item.completed 
+                          ? 'text-slate-400/80 dark:text-slate-500/80 line-through' 
+                          : 'text-slate-500 dark:text-slate-400'
+                      )}
+                    >
+                      {item.description}
+                    </p>
                   )}
 
                   {/* Indicators (Due Date, Comments) */}
@@ -155,7 +168,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     </span>
 
                     {item.messages && item.messages.length > 0 && (
-                      <span className="flex items-center space-x-1 text-2xs px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-100">
+                      <span className="flex items-center space-x-1 text-2xs px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
                         <MessageSquare size={12} className="text-indigo-500" />
                         <span>{item.messages.length} {item.messages.length === 1 ? 'reply' : 'replies'}</span>
                       </span>
@@ -171,7 +184,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     e.stopPropagation();
                     onDelete(item.id);
                   }}
-                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-50 transition-colors"
+                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                   aria-label="Delete homework"
                 >
                   <Trash2 size={16} />
