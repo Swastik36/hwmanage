@@ -429,7 +429,7 @@ export function ThreadDrawer({
 
                         {/* Text message */}
                         {msg.text && (
-                          <div className="mt-1 text-xs text-slate-350 bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 leading-relaxed break-words whitespace-pre-wrap">
+                          <div className="mt-1 text-xs text-slate-200 bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 leading-relaxed break-words whitespace-pre-wrap">
                             {msg.text}
                           </div>
                         )}
@@ -654,7 +654,7 @@ export function ThreadDrawer({
 
                         {/* Author caption at bottom */}
                         <div className="p-2 bg-slate-900 border-t border-slate-800/80 flex items-center justify-between">
-                          <span className="text-4xs font-bold text-slate-350 truncate flex-1 pr-1">
+                          <span className="text-4xs font-bold text-slate-300 truncate flex-1 pr-1">
                             {authorName}
                           </span>
                           <span className="text-5xs text-slate-500 font-medium whitespace-nowrap">
