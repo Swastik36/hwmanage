@@ -1,0 +1,414 @@
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { useHomework } from '@/hooks/useHomework';
+import { HomeworkList } from '@/components/HomeworkList';
+import { AddTaskModal } from '@/components/AddTaskModal';
+import { ThreadDrawer } from '@/components/ThreadDrawer';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { cn, parseLocalDate } from '@/lib/utils';
+import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, Clock, Trash2, Plus, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
+
+export default function MasterAgenda() {
+  const {
+    homework,
+    subjects,
+    loading,
+    toggleHomework,
+    deleteHomework,
+    addHomework,
+    addMessageToThread,
+  } = useHomework();
+
+  // State for active view layout preference (persistent)
+  const [viewMode, setViewMode] = useState<'date' | 'subject'>('date');
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [activeTaskForThreadId, setActiveTaskForThreadId] = useState<string | null>(null);
+
+  const activeTaskForThread = useMemo(() => {
+    return homework.find((t) => t.id === activeTaskForThreadId) || null;
+  }, [homework, activeTaskForThreadId]);
+
+  // Load active view preference from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedPreference = localStorage.getItem('hm_agenda_view_preference');
+      if (savedPreference === 'date' || savedPreference === 'subject') {
+        const timer = setTimeout(() => {
+          setViewMode(savedPreference);
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      console.warn('Could not read view preference from localStorage:', e);
+    }
+  }, []);
+
+  // Update localStorage when viewMode changes
+  const handleViewModeChange = (mode: 'date' | 'subject') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('hm_agenda_view_preference', mode);
+    } catch (e) {
+      console.warn('Could not save view preference to localStorage:', e);
+    }
+  };
+
+  // 1. Normalized Date Boundaries (Time portion set to zero)
+  const dateGroups = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTime = today.getTime();
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowTime = tomorrow.getTime();
+
+    const overdueOrToday: typeof homework = [];
+    const dueTomorrow: typeof homework = [];
+    const laterThisWeek: typeof homework = [];
+    const completedTasks: typeof homework = [];
+
+    homework.forEach((item) => {
+      if (item.completed) {
+        completedTasks.push(item);
+        return;
+      }
+
+      const itemDate = parseLocalDate(item.dueDate);
+      const itemTime = itemDate.getTime();
+
+      if (itemTime <= todayTime) {
+        overdueOrToday.push(item);
+      } else if (itemTime === tomorrowTime) {
+        dueTomorrow.push(item);
+      } else {
+        laterThisWeek.push(item);
+      }
+    });
+
+    // Sort active tasks by due date ascending
+    const sortByDate = (arr: typeof homework) =>
+      [...arr].sort((a, b) => parseLocalDate(a.dueDate).getTime() - parseLocalDate(b.dueDate).getTime());
+
+    return {
+      overdueOrToday: sortByDate(overdueOrToday),
+      dueTomorrow: sortByDate(dueTomorrow),
+      laterThisWeek: sortByDate(laterThisWeek),
+      completed: sortByDate(completedTasks),
+    };
+  }, [homework]);
+
+  // Accent mapping for Subject Grid cards
+  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+    indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+    rose: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = parseLocalDate(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  return (
+    <main className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl space-y-6">
+        
+        {/* Header and Toggle Controls */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1.5">
+            <h2 className="text-2xl font-bold text-white tracking-tight">Master Agenda</h2>
+            <p className="text-sm text-slate-400">View and track all confirmed homework tasks across your courses.</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+            {/* Add Task Button */}
+            <button
+              onClick={() => setIsAddTaskOpen(true)}
+              className="flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5 stroke-[3]" />
+              <span>Add Task</span>
+            </button>
+
+            {/* Persistent Switch View Tabs */}
+            <div className="flex rounded-lg border border-slate-800 bg-slate-900/60 p-1">
+              <button
+                onClick={() => handleViewModeChange('date')}
+                className={cn(
+                  'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  viewMode === 'date'
+                    ? 'bg-slate-850 border border-slate-700/50 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                )}
+              >
+                <Calendar className="h-3.5 w-3.5" />
+                <span>Schedule View</span>
+              </button>
+              <button
+                onClick={() => handleViewModeChange('subject')}
+                className={cn(
+                  'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  viewMode === 'subject'
+                    ? 'bg-slate-850 border border-slate-700/50 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                )}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                <span>Subject Grid</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Global Loading Spinner */}
+        {loading ? (
+          <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+            Loading your agenda...
+          </div>
+        ) : (
+          <>
+            {/* View A: Group by Date (Schedule View) */}
+            {viewMode === 'date' && (
+              <div className="space-y-8">
+                {/* 1. Due Today / Overdue */}
+                <div className="space-y-3">
+                  <h3 className="flex items-center gap-2 text-base font-bold text-red-400 uppercase tracking-wider">
+                    <Clock className="h-4 w-4" />
+                    <span>Due Today / Overdue</span>
+                  </h3>
+                  {dateGroups.overdueOrToday.length === 0 ? (
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                      <Sparkles className="h-5 w-5 text-emerald-400" />
+                      <span>🎉 No homework due today! Time to relax or get ahead.</span>
+                    </div>
+                  ) : (
+                    <HomeworkList
+                      homework={dateGroups.overdueOrToday}
+                      subjects={subjects}
+                      onToggle={toggleHomework}
+                      onDelete={deleteHomework}
+                      onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                    />
+                  )}
+                </div>
+
+                {/* 2. Due Tomorrow */}
+                <div className="space-y-3">
+                  <h3 className="flex items-center gap-2 text-base font-bold text-amber-400 uppercase tracking-wider">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>Due Tomorrow</span>
+                  </h3>
+                  {dateGroups.dueTomorrow.length === 0 ? (
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                      <Smile className="h-5 w-5 text-amber-400" />
+                      <span>🌅 Free evening tomorrow! No tasks scheduled.</span>
+                    </div>
+                  ) : (
+                    <HomeworkList
+                      homework={dateGroups.dueTomorrow}
+                      subjects={subjects}
+                      onToggle={toggleHomework}
+                      onDelete={deleteHomework}
+                      onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                    />
+                  )}
+                </div>
+
+                {/* 3. Later This Week */}
+                <div className="space-y-3">
+                  <h3 className="flex items-center gap-2 text-base font-bold text-indigo-400 uppercase tracking-wider">
+                    <Calendar className="h-4 w-4" />
+                    <span>Later This Week & Beyond</span>
+                  </h3>
+                  {dateGroups.laterThisWeek.length === 0 ? (
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                      <Calendar className="h-5 w-5 text-indigo-400" />
+                      <span>📅 No upcoming tasks. You are all caught up!</span>
+                    </div>
+                  ) : (
+                    <HomeworkList
+                      homework={dateGroups.laterThisWeek}
+                      subjects={subjects}
+                      onToggle={toggleHomework}
+                      onDelete={deleteHomework}
+                      onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                    />
+                  )}
+                </div>
+
+                {/* 4. Completed Tasks Section */}
+                {dateGroups.completed.length > 0 && (
+                  <div className="space-y-3 pt-4 border-t border-slate-900">
+                    <h3 className="flex items-center gap-2 text-base font-bold text-emerald-400 uppercase tracking-wider">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Completed Tasks</span>
+                    </h3>
+                    <HomeworkList
+                      homework={dateGroups.completed}
+                      subjects={subjects}
+                      onToggle={toggleHomework}
+                      onDelete={deleteHomework}
+                      onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* View B: Group by Subject (Grid View) */}
+            {viewMode === 'subject' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {subjects.length === 0 ? (
+                  <div className="col-span-full rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+                    No subjects defined. Add one in <Link href="/subjects" className="text-emerald-400 hover:underline">Subjects</Link>.
+                  </div>
+                ) : (
+                  subjects.map((sub) => {
+                    const activeSubTasks = homework.filter((item) => item.subjectId === sub.id && !item.completed);
+                    const completedSubTasks = homework.filter((item) => item.subjectId === sub.id && item.completed);
+                    const color = colorMap[sub.color] ?? colorMap.indigo;
+
+                    return (
+                      <Card key={sub.id} className="border-slate-800 bg-slate-900/80 flex flex-col justify-between overflow-hidden hover:border-slate-700 transition-all duration-300">
+                        <div>
+                          {/* Subject Header Ribbon */}
+                          <div className={cn('h-1.5', color.text.replace('text-', 'bg-'))} />
+                          <CardHeader className="p-4">
+                            <CardTitle className="text-base flex items-center justify-between text-white font-bold">
+                              <span className="truncate">{sub.name}</span>
+                              <span className={cn('text-2xs font-semibold px-2 py-0.5 rounded-full border', color.bg, color.text, color.border)}>
+                                {activeSubTasks.length} pending
+                              </span>
+                            </CardTitle>
+                          </CardHeader>
+
+                          {/* Task List Inside Subject Card */}
+                          <CardContent className="p-4 pt-0 space-y-3">
+                            {activeSubTasks.length === 0 ? (
+                              <p className="text-xs text-slate-500 italic py-2">No active homework assignments.</p>
+                            ) : (
+                              <div className="space-y-2">
+                                {activeSubTasks.map((task) => (
+                                  <div
+                                    key={task.id}
+                                    onClick={() => setActiveTaskForThreadId(task.id)}
+                                    className="group/item flex items-center justify-between gap-2 rounded-lg border border-slate-800/80 bg-slate-950/60 p-2.5 hover:border-slate-700 transition cursor-pointer active:scale-[0.985]"
+                                  >
+                                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                      {/* Interactive Checkbox */}
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleHomework(task.id);
+                                        }}
+                                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600 hover:border-slate-400"
+                                      >
+                                        <div className="h-2 w-2 rounded-2xs bg-transparent group-hover/item:bg-slate-750 transition" />
+                                      </button>
+                                      
+                                      <div className="min-w-0 flex-1">
+                                        <p className="truncate text-xs font-semibold text-slate-200">{task.title}</p>
+                                        <p className="text-3xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                          <span>Due {formatDate(task.dueDate)}</span>
+                                          <span>•</span>
+                                          <span>{task.priority}</span>
+                                          {task.messages && task.messages.length > 0 && (
+                                            <>
+                                              <span>•</span>
+                                              <span className="inline-flex items-center gap-0.5 text-indigo-400 font-bold">
+                                                <MessageSquare className="h-2.5 w-2.5" />
+                                                {task.messages.length}
+                                              </span>
+                                            </>
+                                          )}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {/* Action button */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteHomework(task.id);
+                                      }}
+                                      className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-900/60 transition"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Completed Section for visual completion feedback */}
+                            {completedSubTasks.length > 0 && (
+                              <div className="mt-4 border-t border-slate-800/60 pt-3">
+                                <p className="text-3xs font-bold text-slate-500 uppercase tracking-wider mb-2">Completed</p>
+                                <div className="space-y-1.5 opacity-60">
+                                  {completedSubTasks.map((task) => (
+                                    <div
+                                      key={task.id}
+                                      onClick={() => setActiveTaskForThreadId(task.id)}
+                                      className="flex items-center justify-between gap-2 rounded-lg border border-slate-850 bg-slate-900/30 p-2 cursor-pointer active:scale-[0.985] hover:border-slate-700 transition"
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleHomework(task.id);
+                                          }}
+                                          className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/20 text-emerald-400 hover:text-slate-400 hover:border-slate-500 transition"
+                                          aria-label="Reopen homework task"
+                                        >
+                                          <CheckCircle2 className="h-3.5 w-3.5" />
+                                        </button>
+                                        <span className="truncate text-xs text-slate-400 line-through">{task.title}</span>
+                                      </div>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          deleteHomework(task.id);
+                                        }}
+                                        className="p-1 text-slate-600 hover:text-red-400 rounded transition"
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </div>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <AddTaskModal
+        isOpen={isAddTaskOpen}
+        onClose={() => setIsAddTaskOpen(false)}
+        onSubmit={addHomework}
+        subjects={subjects}
+      />
+
+      <ThreadDrawer
+        isOpen={activeTaskForThreadId !== null}
+        onClose={() => setActiveTaskForThreadId(null)}
+        task={activeTaskForThread}
+        subjects={subjects}
+        onAddMessage={addMessageToThread}
+        onToggleComplete={toggleHomework}
+      />
+    </main>
+  );
+}
