@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { useHomeworkContext } from '@/context/HomeworkContext';
 import { cn, parseLocalDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
 import { Homework } from '@/types';
-import { BookOpen, CalendarClock, CheckCircle2, ListTodo, Plus, Search, X } from 'lucide-react';
+import { BookOpen, CalendarClock, CheckCircle2, ChevronDown, ChevronUp, ListTodo, Plus, Search, X } from 'lucide-react';
 
 type PresetSet = {
   primary: string[];
@@ -294,15 +294,20 @@ export default function CreatorDashboard() {
                     </div>
 
                     {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
-                      <button
-                        type="button"
-                        onClick={() => setExpanded((p) => !p)}
-                        className="w-full text-center py-2 text-3xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition cursor-pointer select-none bg-slate-950/30 border border-slate-850 hover:border-slate-800 rounded-lg"
-                      >
-                        {expanded 
-                          ? 'Show Less ▴' 
-                          : `Show ${filteredSubjects.length - SUBJECT_VISIBLE_COUNT} More Subjects ▾`}
-                      </button>
+                      <div className="relative flex items-center justify-center">
+                        <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
+                        <button
+                          type="button"
+                          onClick={() => setExpanded((p) => !p)}
+                          className="relative flex items-center gap-1 px-3 py-1 rounded-full bg-slate-950 border border-slate-800/70 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                        >
+                          {expanded ? (
+                            <><ChevronUp size={12} strokeWidth={1.5} />show less</>
+                          ) : (
+                            <><ChevronDown size={12} strokeWidth={1.5} />{filteredSubjects.length - SUBJECT_VISIBLE_COUNT} more</>
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}

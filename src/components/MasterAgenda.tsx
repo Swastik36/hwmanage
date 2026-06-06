@@ -7,7 +7,7 @@ import { AddTaskModal } from '@/components/AddTaskModal';
 import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn, parseLocalDate, formatDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
-import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, Clock, Trash2, Plus, MessageSquare, Search, X } from 'lucide-react';
+import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, ChevronDown, ChevronUp, Clock, Trash2, Plus, MessageSquare, Search, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function MasterAgenda() {
@@ -465,15 +465,20 @@ export default function MasterAgenda() {
                     </div>
 
                     {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
-                      <button
-                        type="button"
-                        onClick={() => setExpanded((p) => !p)}
-                        className="w-full text-center py-2 text-3xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition cursor-pointer select-none bg-slate-900/35 border border-slate-800 hover:border-slate-700 rounded-xl"
-                      >
-                        {expanded 
-                          ? 'Show Less ▴' 
-                          : `Show ${filteredSubjects.length - SUBJECT_VISIBLE_COUNT} More Subjects ▾`}
-                      </button>
+                      <div className="relative flex items-center justify-center mt-1">
+                        <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
+                        <button
+                          type="button"
+                          onClick={() => setExpanded((p) => !p)}
+                          className="relative flex items-center gap-1 px-3 py-1 rounded-full bg-slate-950 border border-slate-800/70 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                        >
+                          {expanded ? (
+                            <><ChevronUp size={12} strokeWidth={1.5} />show less</>
+                          ) : (
+                            <><ChevronDown size={12} strokeWidth={1.5} />{filteredSubjects.length - SUBJECT_VISIBLE_COUNT} more subjects</>
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
