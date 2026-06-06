@@ -59,9 +59,10 @@ export function formatDate(dateStr: string, includeYear = true): string {
  */
 export function isCoachingSubject(name: string): boolean {
   const lower = name.toLowerCase().trim();
-  // Matches: "Coaching Math", "Math Coaching", "Math - Coaching"
-  // Does NOT match: "Pre-Coaching Math" (word boundary check)
-  return /\bcoaching\b/.test(lower);
+  // Matches only when "coaching" is surrounded by whitespace or string edges.
+  // e.g. "Coaching Math", "Math Coaching", "Math Coaching Advanced"
+  // Does NOT match "Pre-Coaching Math" (hyphen is not whitespace/edge)
+  return /(^|\s)coaching(\s|$)/.test(lower);
 }
 
 /**
