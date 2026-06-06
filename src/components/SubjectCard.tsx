@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Subject } from '@/types';
 import { Card, CardContent } from './ui/Card';
 import { cn } from '@/lib/utils';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Trash2 } from 'lucide-react';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -11,6 +11,7 @@ interface SubjectCardProps {
   isSelected?: boolean;
   onClick?: () => void;
   variant?: 'compact' | 'grid';
+  onDelete?: (id: string) => void;
 }
 
 type AccentClasses = {
@@ -59,8 +60,15 @@ export function SubjectCard({
   isSelected = false,
   onClick,
   variant = 'grid',
+  onDelete,
 }: SubjectCardProps) {
   const accent = accentMap[subject.color] ?? accentMap.indigo;
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  // Reset confirmation state if subject changes
+  useEffect(() => {
+    setIsConfirmingDelete(false);
+  }, [subject.id]);
   const completionRate = taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0;
   const pendingCount = taskCount - completedCount;
 
@@ -105,6 +113,40 @@ export function SubjectCard({
   }
 
   // 2. Full Grid Card Layout
+  if (variant === 'grid' && isConfirmingDelete) {
+    return (
+      <Card className="border-red-900 bg-red-950/20 overflow-hidden transition-all duration-300">
+        <div className="h-1.5 bg-red-500" />
+        <CardContent className="p-5 flex flex-col justify-between h-44">
+          <div className="flex-1 flex flex-col justify-center text-center">
+            <h4 className="font-bold text-white text-sm">Delete {subject.name}?</h4>
+            <p className="text-3xs text-red-300 mt-1 leading-relaxed">
+              This action cannot be undone.
+            </p>
+          </div>
+          <div className="flex gap-2.5 mt-4">
+            <button
+              type="button"
+              onClick={() => setIsConfirmingDelete(false)}
+              className="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition cursor-pointer select-none"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onDelete?.(subject.id);
+              }}
+              className="flex-1 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs font-semibold text-white transition cursor-pointer select-none"
+            >
+              Delete
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-slate-800 bg-slate-900/80 overflow-hidden hover:border-slate-700 transition-all duration-300">
       <div className={cn('h-1.5', accent.progressBar)} />
@@ -114,9 +156,24 @@ export function SubjectCard({
             <div className={cn('p-1.5 rounded-lg text-slate-950', accent.progressBar)}>
               <BookOpen size={14} className="stroke-[3]" />
             </div>
-            <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 uppercase tracking-wider">
-              {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 uppercase tracking-wider">
+                {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
+              </span>
+              {variant === 'grid' && onDelete && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsConfirmingDelete(true);
+                  }}
+                  className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-800/80 transition cursor-pointer"
+                  title="Delete subject"
+                >
+                  <Trash2 size={13} />
+                </button>
+              )}
+            </div>
           </div>
 
           <h4 className="mt-3 font-bold text-white text-base truncate">{subject.name}</h4>

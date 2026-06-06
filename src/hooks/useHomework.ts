@@ -85,6 +85,7 @@ export function useHomework() {
   const [mutationStates, setMutationStates] = useState<{
     addHomework: MutationStatus;
     addSubject: MutationStatus;
+    deleteSubject: Record<string, MutationStatus>;
     toggleHomework: Record<string, MutationStatus>;
     editHomework: Record<string, MutationStatus>;
     deleteHomework: Record<string, MutationStatus>;
@@ -92,6 +93,7 @@ export function useHomework() {
   }>({
     addHomework: { loading: false, error: null },
     addSubject: { loading: false, error: null },
+    deleteSubject: {},
     toggleHomework: {},
     editHomework: {},
     deleteHomework: {},
@@ -385,6 +387,55 @@ export function useHomework() {
     }
   };
 
+  // ── 8. Delete Subject (optimistic with rollback) ─────────────────────────
+  const deleteSubject = async (id: string) => {
+    // Check if any homework assignments are associated with the subject
+    const hasHomework = homework.some((h) => h.subjectId === id);
+    if (hasHomework) {
+      throw new Error('Cannot delete subject with existing homework assignments');
+    }
+
+    const originalSubjects = subjects;
+
+    // Optimistic update
+    setSubjects((prev) => prev.filter((sub) => sub.id !== id));
+
+    setMutationStates((prev) => ({
+      ...prev,
+      deleteSubject: {
+        ...prev.deleteSubject,
+        [id]: { loading: true, error: null },
+      },
+    }));
+
+    try {
+      const { error } = await supabase.from('subjects').delete().eq('id', id);
+      if (error) throw error;
+
+      setMutationStates((prev) => {
+        const nextStates = { ...prev.deleteSubject };
+        delete nextStates[id];
+        return {
+          ...prev,
+          deleteSubject: nextStates,
+        };
+      });
+    } catch (err: any) {
+      console.error('Failed to delete subject:', err);
+      // Rollback to original subjects list
+      setSubjects(originalSubjects);
+      const errorInstance = err instanceof Error ? err : new Error(String(err));
+      setMutationStates((prev) => ({
+        ...prev,
+        deleteSubject: {
+          ...prev.deleteSubject,
+          [id]: { loading: false, error: errorInstance },
+        },
+      }));
+      throw errorInstance;
+    }
+  };
+
   // ── 7. Add Message to Discussion Thread ───────────────────────────────────
   const addMessageToThread = async (
     homeworkId: string,
@@ -525,6 +576,7 @@ export function useHomework() {
     editHomework,
     deleteHomework,
     addSubject,
+    deleteSubject,
     addMessageToThread,
   };
 }

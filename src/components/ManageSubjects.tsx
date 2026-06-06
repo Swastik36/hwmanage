@@ -10,7 +10,7 @@ import { Plus, Tag, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ManageSubjects() {
-  const { subjects, homework, addSubject } = useHomeworkContext();
+  const { subjects, homework, addSubject, deleteSubject } = useHomeworkContext();
   const [newSubjectName, setNewSubjectName] = useState('');
   const [selectedColor, setSelectedColor] = useState('indigo');
   const [error, setError] = useState('');
@@ -44,6 +44,23 @@ export default function ManageSubjects() {
       setSelectedColor('indigo');
     } catch (err) {
       setError('Failed to save subject. Please try again.');
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteSubject = async (id: string) => {
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await deleteSubject(id);
+    } catch (err: any) {
+      if (err.message === 'Cannot delete subject with existing homework assignments') {
+        setError('This subject still has homework tasks. Please delete or complete them first.');
+      } else {
+        setError('Failed to delete subject. Please try again.');
+      }
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -137,6 +154,7 @@ export default function ManageSubjects() {
                     taskCount={totalTasks}
                     completedCount={completedTasks}
                     variant="grid"
+                    onDelete={handleDeleteSubject}
                   />
                 );
               })}
