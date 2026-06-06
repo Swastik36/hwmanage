@@ -36,7 +36,7 @@ export function useAnonIdentity(): string {
   const [anonId, setAnonId] = useState<string>('');
 
   useEffect(() => {
-    setAnonId(getOrCreateAnonId());
+    Promise.resolve().then(() => setAnonId(getOrCreateAnonId()));
   }, []);
 
   return anonId;

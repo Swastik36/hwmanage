@@ -67,7 +67,7 @@ export function SubjectCard({
 
   // Reset confirmation state if subject changes
   useEffect(() => {
-    setIsConfirmingDelete(false);
+    Promise.resolve().then(() => setIsConfirmingDelete(false));
   }, [subject.id]);
   const completionRate = taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0;
   const pendingCount = taskCount - completedCount;

@@ -6,9 +6,9 @@ import { SubjectCard } from '@/components/SubjectCard';
 import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Input } from '@/components/ui/Input';
 import { useHomeworkContext } from '@/context/HomeworkContext';
-import { cn, parseLocalDate } from '@/lib/utils';
+import { cn, parseLocalDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
 import { Homework } from '@/types';
-import { BookOpen, CalendarClock, CheckCircle2, ListTodo, Plus } from 'lucide-react';
+import { BookOpen, CalendarClock, CheckCircle2, ListTodo, Plus, Search, X } from 'lucide-react';
 
 type PresetSet = {
   primary: string[];
@@ -78,6 +78,13 @@ export default function CreatorDashboard() {
   const [priority, setPriority] = useState<Homework['priority']>('medium');
   const [showMorePresets, setShowMorePresets] = useState(false);
   const [activeTaskForThreadId, setActiveTaskForThreadId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    Promise.resolve().then(() => setExpanded(false));
+  }, [searchQuery, activeCategory]);
 
   const activeTaskForThread = useMemo(() => {
     return homework.find((t) => t.id === activeTaskForThreadId) || null;
@@ -98,6 +105,22 @@ export default function CreatorDashboard() {
       .filter((item) => !selectedSubjectId || item.subjectId === selectedSubjectId)
       .sort((a, b) => parseLocalDate(a.dueDate).getTime() - parseLocalDate(b.dueDate).getTime());
   }, [homework, selectedSubjectId]);
+
+  const filteredSubjects = useMemo(() => {
+    return subjects.filter((subject) => {
+      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const isCoaching = isCoachingSubject(subject.name);
+      const matchesCategory =
+        activeCategory === 'all' ||
+        (activeCategory === 'coaching' && isCoaching) ||
+        (activeCategory === 'school' && !isCoaching);
+      return matchesSearch && matchesCategory;
+    });
+  }, [subjects, searchQuery, activeCategory]);
+
+  const displayedSubjects = useMemo(() => {
+    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
+  }, [filteredSubjects, expanded]);
 
   const presets = selectedSubject ? getPresetSet(selectedSubject.name) : null;
   const visiblePresets = presets
@@ -187,25 +210,103 @@ export default function CreatorDashboard() {
                 No subjects yet. Add one from subject settings.
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                {subjects.map((subject) => {
-                  const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
-                  const completedCount = subjectTasks.filter((item) => item.completed).length;
-                  const isActive = selectedSubjectId === subject.id;
-
-                  return (
-                    <SubjectCard
-                      key={subject.id}
-                      subject={subject}
-                      taskCount={subjectTasks.length}
-                      completedCount={completedCount}
-                      isSelected={isActive}
-                      onClick={() => handleSubjectSelect(subject.id)}
-                      variant="compact"
+              <>
+                {/* Search and Category Filters */}
+                <div className="mb-4 space-y-2.5">
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="text"
+                      placeholder="Search subjects..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
                     />
-                  );
-                })}
-              </div>
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Category tabs */}
+                  <div className="flex rounded-md border border-slate-850 bg-slate-950/50 p-0.5">
+                    {(['all', 'school', 'coaching'] as const).map((tab) => {
+                      const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
+                      
+                      const count = subjects.filter((s) => {
+                        if (tab === 'all') return true;
+                        const isCoaching = isCoachingSubject(s.name);
+                        return tab === 'coaching' ? isCoaching : !isCoaching;
+                      }).length;
+
+                      return (
+                        <button
+                          key={tab}
+                          type="button"
+                          onClick={() => {
+                            setActiveCategory(tab);
+                            setSelectedSubjectId(null); // Deselect on filter change to prevent active sidebar state mismatches
+                          }}
+                          className={cn(
+                            'flex-1 py-1 text-3xs font-bold rounded-sm uppercase tracking-wider transition cursor-pointer select-none',
+                            activeCategory === tab
+                              ? 'bg-slate-800 text-white shadow-sm border border-slate-700/30'
+                              : 'text-slate-400 hover:text-slate-200'
+                          )}
+                        >
+                          {label} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {filteredSubjects.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-slate-800 px-4 py-6 text-center text-xs text-slate-500 bg-slate-950/20">
+                    No matching subjects found.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
+                      {displayedSubjects.map((subject) => {
+                        const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
+                        const completedCount = subjectTasks.filter((item) => item.completed).length;
+                        const isActive = selectedSubjectId === subject.id;
+
+                        return (
+                          <SubjectCard
+                            key={subject.id}
+                            subject={subject}
+                            taskCount={subjectTasks.length}
+                            completedCount={completedCount}
+                            isSelected={isActive}
+                            onClick={() => handleSubjectSelect(subject.id)}
+                            variant="compact"
+                          />
+                        );
+                      })}
+                    </div>
+
+                    {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
+                      <button
+                        type="button"
+                        onClick={() => setExpanded((p) => !p)}
+                        className="w-full text-center py-2 text-3xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition cursor-pointer select-none bg-slate-950/30 border border-slate-850 hover:border-slate-800 rounded-lg"
+                      >
+                        {expanded 
+                          ? 'Show Less ▴' 
+                          : `Show ${filteredSubjects.length - SUBJECT_VISIBLE_COUNT} More Subjects ▾`}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </aside>
 

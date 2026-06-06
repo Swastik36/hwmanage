@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHomeworkContext } from '@/context/HomeworkContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { SubjectCard } from '@/components/SubjectCard';
-import { Plus, Tag, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus, Tag, AlertCircle, Search, X } from 'lucide-react';
+import { cn, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
 
 export default function ManageSubjects() {
   const { subjects, homework, addSubject, deleteSubject } = useHomeworkContext();
@@ -15,6 +15,13 @@ export default function ManageSubjects() {
   const [selectedColor, setSelectedColor] = useState('indigo');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    Promise.resolve().then(() => setExpanded(false));
+  }, [searchQuery, activeCategory]);
 
   const colors = [
     { name: 'indigo', bg: 'bg-indigo-500', ring: 'ring-indigo-400/50' },
@@ -55,8 +62,9 @@ export default function ManageSubjects() {
     setIsSubmitting(true);
     try {
       await deleteSubject(id);
-    } catch (err: any) {
-      if (err.message === 'Cannot delete subject with existing homework assignments') {
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg === 'Cannot delete subject with existing homework assignments') {
         setError('This subject still has homework tasks. Please delete or complete them first.');
       } else {
         setError('Failed to delete subject. Please try again.');
@@ -66,6 +74,22 @@ export default function ManageSubjects() {
       setIsSubmitting(false);
     }
   };
+
+  const filteredSubjects = useMemo(() => {
+    return subjects.filter((subject) => {
+      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const isCoaching = isCoachingSubject(subject.name);
+      const matchesCategory =
+        activeCategory === 'all' ||
+        (activeCategory === 'coaching' && isCoaching) ||
+        (activeCategory === 'school' && !isCoaching);
+      return matchesSearch && matchesCategory;
+    });
+  }, [subjects, searchQuery, activeCategory]);
+
+  const displayedSubjects = useMemo(() => {
+    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
+  }, [filteredSubjects, expanded]);
 
   return (
     <main className="py-8 px-4 sm:px-6 lg:px-8">
@@ -140,25 +164,101 @@ export default function ManageSubjects() {
 
           {/* Subjects List Column */}
           <div className="md:col-span-2 space-y-4">
-            <h3 className="text-lg font-bold text-slate-200">Current Subjects ({subjects.length})</h3>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="text-lg font-bold text-slate-200">Current Subjects ({subjects.length})</h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {subjects.map((sub) => {
-                const totalTasks = homework.filter((h) => h.subjectId === sub.id).length;
-                const completedTasks = homework.filter((h) => h.subjectId === sub.id && h.completed).length;
+              {/* Category tabs */}
+              {subjects.length > 0 && (
+                <div className="flex rounded-md border border-slate-850 bg-slate-950/50 p-0.5 self-start sm:self-auto">
+                  {(['all', 'school', 'coaching'] as const).map((tab) => {
+                    const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
+                    
+                    const count = subjects.filter((s) => {
+                      if (tab === 'all') return true;
+                      const isCoaching = isCoachingSubject(s.name);
+                      return tab === 'coaching' ? isCoaching : !isCoaching;
+                    }).length;
 
-                return (
-                  <SubjectCard
-                    key={sub.id}
-                    subject={sub}
-                    taskCount={totalTasks}
-                    completedCount={completedTasks}
-                    variant="grid"
-                    onDelete={handleDeleteSubject}
-                  />
-                );
-              })}
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setActiveCategory(tab)}
+                        className={cn(
+                          'py-1 px-3 text-3xs font-bold rounded-sm uppercase tracking-wider transition cursor-pointer select-none',
+                          activeCategory === tab
+                            ? 'bg-slate-800 text-white shadow-sm border border-slate-700/30'
+                            : 'text-slate-400 hover:text-slate-200'
+                        )}
+                      >
+                        {label} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+
+            {/* Search Input */}
+            {subjects.length > 0 && (
+              <div className="relative max-w-sm">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="Search subjects..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {filteredSubjects.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+                No matching subjects found.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {displayedSubjects.map((sub) => {
+                    const totalTasks = homework.filter((h) => h.subjectId === sub.id).length;
+                    const completedTasks = homework.filter((h) => h.subjectId === sub.id && h.completed).length;
+
+                    return (
+                      <SubjectCard
+                        key={sub.id}
+                        subject={sub}
+                        taskCount={totalTasks}
+                        completedCount={completedTasks}
+                        variant="grid"
+                        onDelete={handleDeleteSubject}
+                      />
+                    );
+                  })}
+                </div>
+
+                {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
+                  <button
+                    type="button"
+                    onClick={() => setExpanded((p) => !p)}
+                    className="w-full text-center py-2 text-3xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition cursor-pointer select-none bg-slate-900/35 border border-slate-800 hover:border-slate-700 rounded-xl"
+                  >
+                    {expanded 
+                      ? 'Show Less ▴' 
+                      : `Show ${filteredSubjects.length - SUBJECT_VISIBLE_COUNT} More Subjects ▾`}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

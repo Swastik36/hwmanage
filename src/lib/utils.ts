@@ -53,3 +53,15 @@ export function formatDate(dateStr: string, includeYear = true): string {
     ...(includeYear ? { year: 'numeric' } : {}),
   });
 }
+
+/**
+ * Helper to determine if a subject is a coaching subject based on its name.
+ */
+export function isCoachingSubject(name: string): boolean {
+  return name.toLowerCase().includes('coaching');
+}
+
+/**
+ * Shared visible subject count constant for collapsing layouts.
+ */
+export const SUBJECT_VISIBLE_COUNT = 5;

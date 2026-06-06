@@ -173,7 +173,7 @@ export function useHomework() {
         ...prev,
         addHomework: { loading: false, error: null },
       }));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to create homework:', err);
       const errorInstance = err instanceof Error ? err : new Error(String(err));
       setMutationStates((prev) => ({
@@ -219,7 +219,7 @@ export function useHomework() {
           toggleHomework: nextStates,
         };
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to toggle completion:', err);
       // Rollback
       setHomework((prev) =>
@@ -278,7 +278,7 @@ export function useHomework() {
           editHomework: nextStates,
         };
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to edit homework:', err);
       // Rollback to original if available
       if (original) {
@@ -325,7 +325,7 @@ export function useHomework() {
           deleteHomework: nextStates,
         };
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to delete homework:', err);
       // Rollback functionally to avoid stale closure issues
       if (snapshot) {
@@ -376,7 +376,7 @@ export function useHomework() {
         ...prev,
         addSubject: { loading: false, error: null },
       }));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to add subject:', err);
       const errorInstance = err instanceof Error ? err : new Error(String(err));
       setMutationStates((prev) => ({
@@ -420,7 +420,7 @@ export function useHomework() {
           deleteSubject: nextStates,
         };
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to delete subject:', err);
       // Rollback to original subjects list
       setSubjects(originalSubjects);
@@ -536,7 +536,7 @@ export function useHomework() {
           addMessageToThread: nextStates,
         };
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to save thread message:', err);
 
       // 4. Rollback optimistic update on failure

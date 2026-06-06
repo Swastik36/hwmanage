@@ -6,8 +6,8 @@ import { HomeworkList } from '@/components/HomeworkList';
 import { AddTaskModal } from '@/components/AddTaskModal';
 import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { cn, parseLocalDate, formatDate } from '@/lib/utils';
-import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, Clock, Trash2, Plus, MessageSquare } from 'lucide-react';
+import { cn, parseLocalDate, formatDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
+import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, Clock, Trash2, Plus, MessageSquare, Search, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function MasterAgenda() {
@@ -25,6 +25,13 @@ export default function MasterAgenda() {
   const [viewMode, setViewMode] = useState<'date' | 'subject'>('date');
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeTaskForThreadId, setActiveTaskForThreadId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    Promise.resolve().then(() => setExpanded(false));
+  }, [searchQuery, activeCategory]);
 
   const activeTaskForThread = useMemo(() => {
     return homework.find((t) => t.id === activeTaskForThreadId) || null;
@@ -96,6 +103,22 @@ export default function MasterAgenda() {
       completed: sortByDate(completedTasks),
     };
   }, [homework]);
+
+  const filteredSubjects = useMemo(() => {
+    return subjects.filter((subject) => {
+      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const isCoaching = isCoachingSubject(subject.name);
+      const matchesCategory =
+        activeCategory === 'all' ||
+        (activeCategory === 'coaching' && isCoaching) ||
+        (activeCategory === 'school' && !isCoaching);
+      return matchesSearch && matchesCategory;
+    });
+  }, [subjects, searchQuery, activeCategory]);
+
+  const displayedSubjects = useMemo(() => {
+    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
+  }, [filteredSubjects, expanded]);
 
   // Accent mapping for Subject Grid cards
   const colorMap: Record<string, { bg: string; text: string; border: string; ribbon: string }> = {
@@ -254,132 +277,205 @@ export default function MasterAgenda() {
 
             {/* View B: Group by Subject (Grid View) */}
             {viewMode === 'subject' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subjects.length === 0 ? (
-                  <div className="col-span-full rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
-                    No subjects defined. Add one in <Link href="/subjects" className="text-emerald-400 hover:underline">Subjects</Link>.
+              <div className="space-y-6">
+                {/* Search and Filter Controls */}
+                {subjects.length > 0 && (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl">
+                    {/* Search Bar */}
+                    <div className="relative w-full sm:max-w-xs">
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type="text"
+                        placeholder="Search subjects..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Category tabs */}
+                    <div className="flex rounded-md border border-slate-850 bg-slate-950/60 p-0.5 w-full sm:w-auto">
+                      {(['all', 'school', 'coaching'] as const).map((tab) => {
+                        const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
+                        
+                        const count = subjects.filter((s) => {
+                          if (tab === 'all') return true;
+                          const isCoaching = isCoachingSubject(s.name);
+                          return tab === 'coaching' ? isCoaching : !isCoaching;
+                        }).length;
+
+                        return (
+                          <button
+                            key={tab}
+                            type="button"
+                            onClick={() => setActiveCategory(tab)}
+                            className={cn(
+                              'flex-1 sm:flex-none py-1.5 px-4 text-3xs font-bold rounded-sm uppercase tracking-wider transition cursor-pointer select-none text-center',
+                              activeCategory === tab
+                                ? 'bg-slate-800 text-white shadow-sm border border-slate-700/30'
+                                : 'text-slate-400 hover:text-slate-200'
+                            )}
+                          >
+                            {label} ({count})
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {filteredSubjects.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+                    {subjects.length === 0 
+                      ? <>No subjects defined. Add one in <Link href="/subjects" className="text-emerald-400 hover:underline">Subjects</Link>.</>
+                      : <>No matching subjects found.</>}
                   </div>
                 ) : (
-                  subjects.map((sub) => {
-                    const activeSubTasks = homework.filter((item) => item.subjectId === sub.id && !item.completed);
-                    const completedSubTasks = homework.filter((item) => item.subjectId === sub.id && item.completed);
-                    const color = colorMap[sub.color] ?? colorMap.indigo;
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {displayedSubjects.map((sub) => {
+                        const activeSubTasks = homework.filter((item) => item.subjectId === sub.id && !item.completed);
+                        const completedSubTasks = homework.filter((item) => item.subjectId === sub.id && item.completed);
+                        const color = colorMap[sub.color] ?? colorMap.indigo;
 
-                    return (
-                      <Card key={sub.id} className="border-slate-800 bg-slate-900/80 flex flex-col justify-between overflow-hidden hover:border-slate-700 transition-all duration-300">
-                        <div>
-                          {/* Subject Header Ribbon */}
-                          <div className={cn('h-1.5', color.ribbon)} />
-                          <CardHeader className="p-4">
-                            <CardTitle className="text-base flex items-center justify-between text-white font-bold">
-                              <span className="truncate">{sub.name}</span>
-                              <span className={cn('text-2xs font-semibold px-2 py-0.5 rounded-full border', color.bg, color.text, color.border)}>
-                                {activeSubTasks.length} pending
-                              </span>
-                            </CardTitle>
-                          </CardHeader>
+                        return (
+                          <Card key={sub.id} className="border-slate-800 bg-slate-900/80 flex flex-col justify-between overflow-hidden hover:border-slate-700 transition-all duration-300">
+                            <div>
+                              {/* Subject Header Ribbon */}
+                              <div className={cn('h-1.5', color.ribbon)} />
+                              <CardHeader className="p-4">
+                                <CardTitle className="text-base flex items-center justify-between text-white font-bold">
+                                  <span className="truncate">{sub.name}</span>
+                                  <span className={cn('text-2xs font-semibold px-2 py-0.5 rounded-full border', color.bg, color.text, color.border)}>
+                                    {activeSubTasks.length} pending
+                                  </span>
+                                </CardTitle>
+                              </CardHeader>
 
-                          {/* Task List Inside Subject Card */}
-                          <CardContent className="p-4 pt-0 space-y-3">
-                            {activeSubTasks.length === 0 ? (
-                              <p className="text-xs text-slate-500 italic py-2">No active homework assignments.</p>
-                            ) : (
-                              <div className="space-y-2">
-                                {activeSubTasks.map((task) => (
-                                  <div
-                                    key={task.id}
-                                    onClick={() => setActiveTaskForThreadId(task.id)}
-                                    className="group/item flex items-center justify-between gap-2 rounded-lg border border-slate-800/80 bg-slate-950/60 p-2.5 hover:border-slate-700 transition cursor-pointer active:scale-[0.985]"
-                                  >
-                                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                      {/* Interactive Checkbox */}
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleHomework(task.id);
-                                        }}
-                                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600 hover:border-slate-400"
+                              {/* Task List Inside Subject Card */}
+                              <CardContent className="p-4 pt-0 space-y-3">
+                                {activeSubTasks.length === 0 ? (
+                                  <p className="text-xs text-slate-500 italic py-2">No active homework assignments.</p>
+                                ) : (
+                                  <div className="space-y-2">
+                                    {activeSubTasks.map((task) => (
+                                      <div
+                                        key={task.id}
+                                        onClick={() => setActiveTaskForThreadId(task.id)}
+                                        className="group/item flex items-center justify-between gap-2 rounded-lg border border-slate-800/80 bg-slate-950/60 p-2.5 hover:border-slate-700 transition cursor-pointer active:scale-[0.985]"
                                       >
-                                        <div className="h-2 w-2 rounded-2xs bg-transparent group-hover/item:bg-slate-750 transition" />
-                                      </button>
-                                      
-                                      <div className="min-w-0 flex-1">
-                                        <p className="truncate text-xs font-semibold text-slate-200">{task.title}</p>
-                                        <p className="text-3xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                                          <span>Due {formatDate(task.dueDate, false)}</span>
-                                          <span>•</span>
-                                          <span>{task.priority}</span>
-                                          {task.messages && task.messages.length > 0 && (
-                                            <>
+                                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                          {/* Interactive Checkbox */}
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              toggleHomework(task.id);
+                                            }}
+                                            className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600 hover:border-slate-400"
+                                          >
+                                            <div className="h-2 w-2 rounded-2xs bg-transparent group-hover/item:bg-slate-750 transition" />
+                                          </button>
+                                          
+                                          <div className="min-w-0 flex-1">
+                                            <p className="truncate text-xs font-semibold text-slate-200">{task.title}</p>
+                                            <p className="text-3xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                              <span>Due {formatDate(task.dueDate, false)}</span>
                                               <span>•</span>
-                                              <span className="inline-flex items-center gap-0.5 text-indigo-400 font-bold">
-                                                <MessageSquare className="h-2.5 w-2.5" />
-                                                {task.messages.length}
-                                              </span>
-                                            </>
-                                          )}
-                                        </p>
-                                      </div>
-                                    </div>
+                                              <span>{task.priority}</span>
+                                              {task.messages && task.messages.length > 0 && (
+                                                <>
+                                                  <span>•</span>
+                                                  <span className="inline-flex items-center gap-0.5 text-indigo-400 font-bold">
+                                                    <MessageSquare className="h-2.5 w-2.5" />
+                                                    {task.messages.length}
+                                                  </span>
+                                                </>
+                                              )}
+                                            </p>
+                                          </div>
+                                        </div>
 
-                                    {/* Action button */}
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteHomework(task.id);
-                                      }}
-                                      className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-900/60 transition"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Completed Section for visual completion feedback */}
-                            {completedSubTasks.length > 0 && (
-                              <div className="mt-4 border-t border-slate-800/60 pt-3">
-                                <p className="text-3xs font-bold text-slate-500 uppercase tracking-wider mb-2">Completed</p>
-                                <div className="space-y-1.5 opacity-60">
-                                  {completedSubTasks.map((task) => (
-                                    <div
-                                      key={task.id}
-                                      onClick={() => setActiveTaskForThreadId(task.id)}
-                                      className="flex items-center justify-between gap-2 rounded-lg border border-slate-850 bg-slate-900/30 p-2 cursor-pointer active:scale-[0.985] hover:border-slate-700 transition"
-                                    >
-                                      <div className="flex items-center gap-2 min-w-0">
+                                        {/* Action button */}
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            toggleHomework(task.id);
+                                            deleteHomework(task.id);
                                           }}
-                                          className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/20 text-emerald-400 hover:text-slate-400 hover:border-slate-500 transition"
-                                          aria-label="Reopen homework task"
+                                          className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-900/60 transition"
                                         >
-                                          <CheckCircle2 className="h-3.5 w-3.5" />
+                                          <Trash2 className="h-3.5 w-3.5" />
                                         </button>
-                                        <span className="truncate text-xs text-slate-400 line-through">{task.title}</span>
                                       </div>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          deleteHomework(task.id);
-                                        }}
-                                        className="p-1 text-slate-600 hover:text-red-400 rounded transition"
-                                      >
-                                        <Trash2 className="h-3 w-3" />
-                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Completed Section for visual completion feedback */}
+                                {completedSubTasks.length > 0 && (
+                                  <div className="mt-4 border-t border-slate-800/60 pt-3">
+                                    <p className="text-3xs font-bold text-slate-500 uppercase tracking-wider mb-2">Completed</p>
+                                    <div className="space-y-1.5 opacity-60">
+                                      {completedSubTasks.map((task) => (
+                                        <div
+                                          key={task.id}
+                                          onClick={() => setActiveTaskForThreadId(task.id)}
+                                          className="flex items-center justify-between gap-2 rounded-lg border border-slate-850 bg-slate-900/30 p-2 cursor-pointer active:scale-[0.985] hover:border-slate-700 transition"
+                                        >
+                                          <div className="flex items-center gap-2 min-w-0">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleHomework(task.id);
+                                              }}
+                                              className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/20 text-emerald-400 hover:text-slate-400 hover:border-slate-500 transition"
+                                              aria-label="Reopen homework task"
+                                            >
+                                              <CheckCircle2 className="h-3.5 w-3.5" />
+                                            </button>
+                                            <span className="truncate text-xs text-slate-400 line-through">{task.title}</span>
+                                          </div>
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              deleteHomework(task.id);
+                                            }}
+                                            className="p-1 text-slate-600 hover:text-red-400 rounded transition"
+                                          >
+                                            <Trash2 className="h-3 w-3" />
+                                          </button>
+                                        </div>
+                                      ))}
                                     </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </CardContent>
-                        </div>
-                      </Card>
-                    );
-                  })
+                                  </div>
+                                )}
+                              </CardContent>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+
+                    {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
+                      <button
+                        type="button"
+                        onClick={() => setExpanded((p) => !p)}
+                        className="w-full text-center py-2 text-3xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition cursor-pointer select-none bg-slate-900/35 border border-slate-800 hover:border-slate-700 rounded-xl"
+                      >
+                        {expanded 
+                          ? 'Show Less ▴' 
+                          : `Show ${filteredSubjects.length - SUBJECT_VISIBLE_COUNT} More Subjects ▾`}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             )}
