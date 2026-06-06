@@ -58,7 +58,10 @@ export function formatDate(dateStr: string, includeYear = true): string {
  * Helper to determine if a subject is a coaching subject based on its name.
  */
 export function isCoachingSubject(name: string): boolean {
-  return name.toLowerCase().includes('coaching');
+  const lower = name.toLowerCase().trim();
+  // Matches: "Coaching Math", "Math Coaching", "Math - Coaching"
+  // Does NOT match: "Pre-Coaching Math" (word boundary check)
+  return /\bcoaching\b/.test(lower);
 }
 
 /**

@@ -89,8 +89,8 @@ export function SubjectCard({
           'flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition-all duration-150 active:scale-[0.99] focus:outline-none',
           isSelected
             ? isCoaching
-              ? 'border-amber-500/30 bg-amber-500/8 ring-1 ring-amber-500/10 text-white'
-              : 'border-indigo-500/30 bg-indigo-500/8 ring-1 ring-indigo-500/10 text-white'
+              ? 'border-amber-500/30 bg-amber-500/10 ring-1 ring-amber-500/15 text-white'
+              : 'border-indigo-500/30 bg-indigo-500/10 ring-1 ring-indigo-500/15 text-white'
             : 'border-transparent bg-slate-800/30 text-slate-300 hover:bg-slate-700/30 hover:border-slate-700/40'
         )}
       >

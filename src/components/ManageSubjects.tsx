@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useHomeworkContext } from '@/context/HomeworkContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { SubjectCard } from '@/components/SubjectCard';
 import { ChevronDown, ChevronUp, Plus, Tag, AlertCircle, Search, X } from 'lucide-react';
 import { cn, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
+import { useSubjectFilter } from '@/hooks/useSubjectFilter';
 
 export default function ManageSubjects() {
   const { subjects, homework, addSubject, deleteSubject } = useHomeworkContext();
@@ -15,13 +16,16 @@ export default function ManageSubjects() {
   const [selectedColor, setSelectedColor] = useState('indigo');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    Promise.resolve().then(() => setExpanded(false));
-  }, [searchQuery, activeCategory]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    activeCategory,
+    setActiveCategory,
+    expanded,
+    setExpanded,
+    filteredSubjects,
+    displayedSubjects,
+  } = useSubjectFilter(subjects);
 
   const colors = [
     { name: 'indigo', bg: 'bg-indigo-500', ring: 'ring-indigo-400/50' },
@@ -75,21 +79,7 @@ export default function ManageSubjects() {
     }
   };
 
-  const filteredSubjects = useMemo(() => {
-    return subjects.filter((subject) => {
-      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const isCoaching = isCoachingSubject(subject.name);
-      const matchesCategory =
-        activeCategory === 'all' ||
-        (activeCategory === 'coaching' && isCoaching) ||
-        (activeCategory === 'school' && !isCoaching);
-      return matchesSearch && matchesCategory;
-    });
-  }, [subjects, searchQuery, activeCategory]);
 
-  const displayedSubjects = useMemo(() => {
-    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
-  }, [filteredSubjects, expanded]);
 
   return (
     <main className="py-8 px-4 sm:px-6 lg:px-8">
@@ -169,7 +159,7 @@ export default function ManageSubjects() {
 
               {/* Category tabs */}
               {subjects.length > 0 && (
-                <div className="flex gap-0.5 rounded-lg border border-slate-800/60 bg-slate-950/40 p-0.5 self-start sm:self-auto">
+                <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5 self-start sm:self-auto">
                   {(['all', 'school', 'coaching'] as const).map((tab) => {
                     const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                     
@@ -187,7 +177,7 @@ export default function ManageSubjects() {
                         className={cn(
                           'py-0.5 px-2.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                           activeCategory === tab
-                            ? 'bg-slate-800/80 text-slate-100 shadow-sm'
+                            ? 'bg-slate-700/70 text-slate-100 shadow-sm'
                             : 'text-slate-500 hover:text-slate-300'
                         )}
                       >
@@ -224,7 +214,11 @@ export default function ManageSubjects() {
 
             {filteredSubjects.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
-                No matching subjects found.
+                {subjects.length === 0 ? (
+                  <span>No subjects yet. Add one using the form on the left.</span>
+                ) : (
+                  <span>No subjects match your search or filter.</span>
+                )}
               </div>
             ) : (
               <div className="space-y-4">

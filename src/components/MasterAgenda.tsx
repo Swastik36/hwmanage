@@ -7,6 +7,7 @@ import { AddTaskModal } from '@/components/AddTaskModal';
 import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn, parseLocalDate, formatDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
+import { useSubjectFilter } from '@/hooks/useSubjectFilter';
 import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, ChevronDown, ChevronUp, Clock, Trash2, Plus, MessageSquare, Search, X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,13 +26,16 @@ export default function MasterAgenda() {
   const [viewMode, setViewMode] = useState<'date' | 'subject'>('date');
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeTaskForThreadId, setActiveTaskForThreadId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    Promise.resolve().then(() => setExpanded(false));
-  }, [searchQuery, activeCategory]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    activeCategory,
+    setActiveCategory,
+    expanded,
+    setExpanded,
+    filteredSubjects,
+    displayedSubjects,
+  } = useSubjectFilter(subjects);
 
   const activeTaskForThread = useMemo(() => {
     return homework.find((t) => t.id === activeTaskForThreadId) || null;
@@ -104,21 +108,7 @@ export default function MasterAgenda() {
     };
   }, [homework]);
 
-  const filteredSubjects = useMemo(() => {
-    return subjects.filter((subject) => {
-      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const isCoaching = isCoachingSubject(subject.name);
-      const matchesCategory =
-        activeCategory === 'all' ||
-        (activeCategory === 'coaching' && isCoaching) ||
-        (activeCategory === 'school' && !isCoaching);
-      return matchesSearch && matchesCategory;
-    });
-  }, [subjects, searchQuery, activeCategory]);
 
-  const displayedSubjects = useMemo(() => {
-    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
-  }, [filteredSubjects, expanded]);
 
   // Accent mapping for Subject Grid cards
   const colorMap: Record<string, { bg: string; text: string; border: string; ribbon: string }> = {
@@ -303,7 +293,7 @@ export default function MasterAgenda() {
                     </div>
 
                     {/* Category tabs */}
-                    <div className="flex gap-0.5 rounded-lg border border-slate-800/60 bg-slate-950/40 p-0.5 w-full sm:w-auto">
+                    <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5 w-full sm:w-auto">
                       {(['all', 'school', 'coaching'] as const).map((tab) => {
                         const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                         
@@ -321,7 +311,7 @@ export default function MasterAgenda() {
                             className={cn(
                               'flex-1 sm:flex-none px-3 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
                               activeCategory === tab
-                                ? 'bg-slate-800/80 text-slate-100 shadow-sm'
+                                ? 'bg-slate-700/70 text-slate-100 shadow-sm'
                                 : 'text-slate-500 hover:text-slate-300'
                             )}
                           >

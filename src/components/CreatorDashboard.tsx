@@ -7,6 +7,7 @@ import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Input } from '@/components/ui/Input';
 import { useHomeworkContext } from '@/context/HomeworkContext';
 import { cn, parseLocalDate, isCoachingSubject, SUBJECT_VISIBLE_COUNT } from '@/lib/utils';
+import { useSubjectFilter } from '@/hooks/useSubjectFilter';
 import { Homework } from '@/types';
 import { BookOpen, CalendarClock, CheckCircle2, ChevronDown, ChevronUp, ListTodo, Plus, Search, X } from 'lucide-react';
 
@@ -78,13 +79,19 @@ export default function CreatorDashboard() {
   const [priority, setPriority] = useState<Homework['priority']>('medium');
   const [showMorePresets, setShowMorePresets] = useState(false);
   const [activeTaskForThreadId, setActiveTaskForThreadId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'school' | 'coaching'>('all');
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    Promise.resolve().then(() => setExpanded(false));
-  }, [searchQuery, activeCategory]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    activeCategory,
+    setActiveCategory,
+    expanded,
+    setExpanded,
+    filteredSubjects,
+    displayedSubjects,
+  } = useSubjectFilter(subjects, {
+    selectedSubjectId,
+    onSelectionExcluded: () => setSelectedSubjectId(null),
+  });
 
   const activeTaskForThread = useMemo(() => {
     return homework.find((t) => t.id === activeTaskForThreadId) || null;
@@ -105,22 +112,6 @@ export default function CreatorDashboard() {
       .filter((item) => !selectedSubjectId || item.subjectId === selectedSubjectId)
       .sort((a, b) => parseLocalDate(a.dueDate).getTime() - parseLocalDate(b.dueDate).getTime());
   }, [homework, selectedSubjectId]);
-
-  const filteredSubjects = useMemo(() => {
-    return subjects.filter((subject) => {
-      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const isCoaching = isCoachingSubject(subject.name);
-      const matchesCategory =
-        activeCategory === 'all' ||
-        (activeCategory === 'coaching' && isCoaching) ||
-        (activeCategory === 'school' && !isCoaching);
-      return matchesSearch && matchesCategory;
-    });
-  }, [subjects, searchQuery, activeCategory]);
-
-  const displayedSubjects = useMemo(() => {
-    return expanded ? filteredSubjects : filteredSubjects.slice(0, SUBJECT_VISIBLE_COUNT);
-  }, [filteredSubjects, expanded]);
 
   const presets = selectedSubject ? getPresetSet(selectedSubject.name) : null;
   const visiblePresets = presets
