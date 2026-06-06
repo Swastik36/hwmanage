@@ -221,7 +221,7 @@ export default function CreatorDashboard() {
                       placeholder="Search subjects..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                      className="w-full bg-slate-900/80 border border-slate-700/50 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition"
                     />
                     {searchQuery && (
                       <button
@@ -235,7 +235,7 @@ export default function CreatorDashboard() {
                   </div>
 
                   {/* Category tabs */}
-                  <div className="flex gap-0.5 rounded-lg border border-slate-800/60 bg-slate-950/40 p-0.5">
+                  <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5">
                     {(['all', 'school', 'coaching'] as const).map((tab) => {
                       const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                       
@@ -256,7 +256,7 @@ export default function CreatorDashboard() {
                           className={cn(
                             'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                             activeCategory === tab
-                              ? 'bg-slate-800/80 text-slate-100 shadow-sm'
+                              ? 'bg-slate-700/70 text-slate-100'
                               : 'text-slate-500 hover:text-slate-300'
                           )}
                         >
@@ -299,7 +299,7 @@ export default function CreatorDashboard() {
                         <button
                           type="button"
                           onClick={() => setExpanded((p) => !p)}
-                          className="relative flex items-center gap-1 px-3 py-1 rounded-full bg-slate-950 border border-slate-800/70 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                          className="relative flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
                         >
                           {expanded ? (
                             <><ChevronUp size={12} strokeWidth={1.5} />show less</>
@@ -317,7 +317,7 @@ export default function CreatorDashboard() {
 
           <section className="flex min-h-[400px] flex-col justify-between rounded-xl border border-slate-700 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 md:col-span-2">
             {!selectedSubject ? (
-              <div className="flex min-h-[352px] flex-1 items-center justify-center rounded-lg border border-dashed border-slate-700 bg-slate-950/50 px-6 text-center">
+              <div className="flex min-h-[352px] flex-1 items-center justify-center rounded-lg bg-slate-950/30 px-6 text-center">
                 <div className="max-w-md">
                   <BookOpen className="mx-auto h-10 w-10 text-slate-600" />
                   <h2 className="mt-4 text-xl font-semibold text-white">
