@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Header } from '@/components/Header';
+import { HomeworkProvider } from '@/context/HomeworkContext';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased dark">
       <body className="min-h-full flex flex-col font-sans bg-slate-950 text-slate-50">
-        <Header />
-        {children}
+        <HomeworkProvider>
+          <Header />
+          {children}
+        </HomeworkProvider>
       </body>
     </html>
   );

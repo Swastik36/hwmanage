@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHomework } from '@/hooks/useHomework';
+import { useHomeworkContext } from '@/context/HomeworkContext';
 import { HomeworkList } from '@/components/HomeworkList';
 import { AddTaskModal } from '@/components/AddTaskModal';
-import { ThreadDrawer } from '@/components/ThreadDrawer';
+import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { cn, parseLocalDate } from '@/lib/utils';
+import { cn, parseLocalDate, formatDate } from '@/lib/utils';
 import { Calendar, BookOpen, Sparkles, Smile, CalendarDays, CheckCircle2, Clock, Trash2, Plus, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,7 +19,7 @@ export default function MasterAgenda() {
     deleteHomework,
     addHomework,
     addMessageToThread,
-  } = useHomework();
+  } = useHomeworkContext();
 
   // State for active view layout preference (persistent)
   const [viewMode, setViewMode] = useState<'date' | 'subject'>('date');
@@ -35,10 +35,7 @@ export default function MasterAgenda() {
     try {
       const savedPreference = localStorage.getItem('hm_agenda_view_preference');
       if (savedPreference === 'date' || savedPreference === 'subject') {
-        const timer = setTimeout(() => {
-          setViewMode(savedPreference);
-        }, 0);
-        return () => clearTimeout(timer);
+        Promise.resolve().then(() => setViewMode(savedPreference));
       }
     } catch (e) {
       console.warn('Could not read view preference from localStorage:', e);
@@ -81,7 +78,7 @@ export default function MasterAgenda() {
 
       if (itemTime <= todayTime) {
         overdueOrToday.push(item);
-      } else if (itemTime === tomorrowTime) {
+      } else if (itemTime >= tomorrowTime && itemTime < tomorrowTime + 86400000) {
         dueTomorrow.push(item);
       } else {
         laterThisWeek.push(item);
@@ -101,17 +98,13 @@ export default function MasterAgenda() {
   }, [homework]);
 
   // Accent mapping for Subject Grid cards
-  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-    indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
-    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-    amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
-    rose: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+  const colorMap: Record<string, { bg: string; text: string; border: string; ribbon: string }> = {
+    indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20', ribbon: 'bg-indigo-500' },
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', ribbon: 'bg-emerald-500' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', ribbon: 'bg-amber-500' },
+    rose: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20', ribbon: 'bg-rose-500' },
   };
 
-  const formatDate = (dateStr: string) => {
-    const d = parseLocalDate(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
 
   return (
     <main className="py-8 px-4 sm:px-6 lg:px-8">
@@ -276,7 +269,7 @@ export default function MasterAgenda() {
                       <Card key={sub.id} className="border-slate-800 bg-slate-900/80 flex flex-col justify-between overflow-hidden hover:border-slate-700 transition-all duration-300">
                         <div>
                           {/* Subject Header Ribbon */}
-                          <div className={cn('h-1.5', color.text.replace('text-', 'bg-'))} />
+                          <div className={cn('h-1.5', color.ribbon)} />
                           <CardHeader className="p-4">
                             <CardTitle className="text-base flex items-center justify-between text-white font-bold">
                               <span className="truncate">{sub.name}</span>
@@ -313,7 +306,7 @@ export default function MasterAgenda() {
                                       <div className="min-w-0 flex-1">
                                         <p className="truncate text-xs font-semibold text-slate-200">{task.title}</p>
                                         <p className="text-3xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                                          <span>Due {formatDate(task.dueDate)}</span>
+                                          <span>Due {formatDate(task.dueDate, false)}</span>
                                           <span>•</span>
                                           <span>{task.priority}</span>
                                           {task.messages && task.messages.length > 0 && (

@@ -14,7 +14,7 @@ export interface ThreadMessage {
   id: string;
   authorName: string;
   avatarUrl?: string;
-  text: string;
+  text?: string;
   createdAt: string; // ISO timestamp
   attachments?: ThreadAttachment[];
 }

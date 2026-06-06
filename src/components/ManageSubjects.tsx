@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useHomework } from '@/hooks/useHomework';
+import { useHomeworkContext } from '@/context/HomeworkContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
@@ -10,10 +10,11 @@ import { Plus, Tag, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ManageSubjects() {
-  const { subjects, homework, addSubject } = useHomework();
+  const { subjects, homework, addSubject } = useHomeworkContext();
   const [newSubjectName, setNewSubjectName] = useState('');
   const [selectedColor, setSelectedColor] = useState('indigo');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const colors = [
     { name: 'indigo', bg: 'bg-indigo-500', ring: 'ring-indigo-400/50' },
@@ -22,7 +23,7 @@ export default function ManageSubjects() {
     { name: 'rose', bg: 'bg-rose-500', ring: 'ring-rose-400/50' },
   ];
 
-  const handleAddSubject = (e: React.FormEvent) => {
+  const handleAddSubject = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -36,9 +37,17 @@ export default function ManageSubjects() {
       return;
     }
 
-    addSubject(newSubjectName.trim(), selectedColor);
-    setNewSubjectName('');
-    setSelectedColor('indigo');
+    setIsSubmitting(true);
+    try {
+      await addSubject(newSubjectName.trim(), selectedColor);
+      setNewSubjectName('');
+      setSelectedColor('indigo');
+    } catch (err) {
+      setError('Failed to save subject. Please try again.');
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -99,9 +108,13 @@ export default function ManageSubjects() {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full flex items-center justify-center space-x-2 bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold rounded-lg h-10">
-                    <Plus size={16} />
-                    <span>Add Subject</span>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || !newSubjectName.trim()}
+                    className="w-full flex items-center justify-center space-x-2 bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold rounded-lg h-10 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  >
+                    <Plus size={16} className={isSubmitting ? 'animate-spin' : ''} />
+                    <span>{isSubmitting ? 'Saving...' : 'Add Subject'}</span>
                   </Button>
                 </form>
               </CardContent>

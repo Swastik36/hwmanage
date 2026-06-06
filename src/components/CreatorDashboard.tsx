@@ -3,9 +3,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { HomeworkList } from '@/components/HomeworkList';
 import { SubjectCard } from '@/components/SubjectCard';
-import { ThreadDrawer } from '@/components/ThreadDrawer';
+import { ThreadDrawer } from '@/components/thread/ThreadDrawer';
 import { Input } from '@/components/ui/Input';
-import { useHomework } from '@/hooks/useHomework';
+import { useHomeworkContext } from '@/context/HomeworkContext';
 import { cn, parseLocalDate } from '@/lib/utils';
 import { Homework } from '@/types';
 import { BookOpen, CalendarClock, CheckCircle2, ListTodo, Plus } from 'lucide-react';
@@ -69,7 +69,7 @@ export default function CreatorDashboard() {
     toggleHomework,
     deleteHomework,
     addMessageToThread,
-  } = useHomework();
+  } = useHomeworkContext();
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [stagedTask, setStagedTask] = useState('');
@@ -96,7 +96,7 @@ export default function CreatorDashboard() {
   const visibleHomework = useMemo(() => {
     return [...homework]
       .filter((item) => !selectedSubjectId || item.subjectId === selectedSubjectId)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => parseLocalDate(a.dueDate).getTime() - parseLocalDate(b.dueDate).getTime());
   }, [homework, selectedSubjectId]);
 
   const presets = selectedSubject ? getPresetSet(selectedSubject.name) : null;
@@ -247,7 +247,7 @@ export default function CreatorDashboard() {
                           <>
                             <h3 className="mt-1 break-words text-xl font-bold text-white">{stagedTitle}</h3>
                             <p className="mt-2 text-sm text-slate-400">
-                              Due {dueDate ? new Date(parseLocalDate(dueDate)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'not set'} with {priority} priority.
+                              Due {dueDate ? parseLocalDate(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'not set'} with {priority} priority.
                             </p>
                           </>
                         ) : (
