@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Subject } from '@/types';
 import { Card, CardContent } from './ui/Card';
-import { cn } from '@/lib/utils';
+import { cn, isCoachingSubject } from '@/lib/utils';
 import { BookOpen, Trash2 } from 'lucide-react';
 
 interface SubjectCardProps {
@@ -79,33 +79,41 @@ export function SubjectCard({
 
   // 1. Compact Sidebar Button Layout
   if (variant === 'compact') {
+    const isCoaching = isCoachingSubject(subject.name);
     return (
       <button
         type="button"
         aria-pressed={isSelected}
         onClick={onClick}
         className={cn(
-          'flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition active:scale-[0.99] focus:outline-none',
+          'flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition-all duration-150 active:scale-[0.99] focus:outline-none',
           isSelected
-            ? accent.active
-            : cn('border-slate-800 bg-slate-950/60 text-slate-300', accent.inactiveHover)
+            ? isCoaching
+              ? 'border-amber-500/30 bg-amber-500/8 ring-1 ring-amber-500/10 text-white'
+              : 'border-indigo-500/30 bg-indigo-500/8 ring-1 ring-indigo-500/10 text-white'
+            : 'border-transparent bg-slate-800/30 text-slate-300 hover:bg-slate-700/30 hover:border-slate-700/40'
         )}
       >
         <span className="flex min-w-0 items-center gap-3">
           <span
             className={cn(
-              'h-3 w-3 shrink-0 rotate-45 rounded-[2px]',
-              isSelected ? accent.marker : 'bg-slate-600'
+              'h-2 w-2 shrink-0 rounded-full',
+              isCoaching ? 'bg-amber-400' : 'bg-indigo-400'
             )}
           />
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold">{subject.name}</span>
+            <span className="block truncate text-sm font-medium text-slate-200">{subject.name}</span>
             <span className="mt-1 block text-xs text-slate-400">
               {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
             </span>
           </span>
         </span>
-        <span className={cn('rounded-md border px-2 py-1 text-xs font-semibold', accent.soft)}>
+        <span className={cn(
+          'text-[10px] font-medium px-2 py-0.5 rounded-md border',
+          isCoaching
+            ? 'bg-amber-500/15 text-amber-300 border-amber-500/20'
+            : 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20'
+        )}>
           {completedCount}/{taskCount}
         </span>
       </button>

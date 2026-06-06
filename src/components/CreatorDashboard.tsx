@@ -192,7 +192,7 @@ export default function CreatorDashboard() {
         </div>
 
         <section className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
-          <aside className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+          <aside className="rounded-xl border border-slate-700/60 bg-slate-800/60 p-4">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-white">Subjects</h2>
