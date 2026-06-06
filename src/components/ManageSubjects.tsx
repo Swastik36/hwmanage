@@ -169,7 +169,7 @@ export default function ManageSubjects() {
 
               {/* Category tabs */}
               {subjects.length > 0 && (
-                <div className="flex rounded-md border border-slate-850 bg-slate-950/50 p-0.5 self-start sm:self-auto">
+                <div className="flex gap-0.5 rounded-lg border border-slate-800/60 bg-slate-950/40 p-0.5 self-start sm:self-auto">
                   {(['all', 'school', 'coaching'] as const).map((tab) => {
                     const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                     
@@ -185,13 +185,13 @@ export default function ManageSubjects() {
                         type="button"
                         onClick={() => setActiveCategory(tab)}
                         className={cn(
-                          'py-1 px-3 text-3xs font-bold rounded-sm uppercase tracking-wider transition cursor-pointer select-none',
+                          'py-0.5 px-2.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                           activeCategory === tab
-                            ? 'bg-slate-800 text-white shadow-sm border border-slate-700/30'
-                            : 'text-slate-400 hover:text-slate-200'
+                            ? 'bg-slate-800/80 text-slate-100 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-300'
                         )}
                       >
-                        {label} ({count})
+                        {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
                       </button>
                     );
                   })}

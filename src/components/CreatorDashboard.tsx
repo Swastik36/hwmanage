@@ -235,7 +235,7 @@ export default function CreatorDashboard() {
                   </div>
 
                   {/* Category tabs */}
-                  <div className="flex rounded-md border border-slate-850 bg-slate-950/50 p-0.5">
+                  <div className="flex gap-0.5 rounded-lg border border-slate-800/60 bg-slate-950/40 p-0.5">
                     {(['all', 'school', 'coaching'] as const).map((tab) => {
                       const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                       
@@ -251,16 +251,16 @@ export default function CreatorDashboard() {
                           type="button"
                           onClick={() => {
                             setActiveCategory(tab);
-                            setSelectedSubjectId(null); // Deselect on filter change to prevent active sidebar state mismatches
+                            setSelectedSubjectId(null);
                           }}
                           className={cn(
-                            'flex-1 py-1 text-3xs font-bold rounded-sm uppercase tracking-wider transition cursor-pointer select-none',
+                            'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                             activeCategory === tab
-                              ? 'bg-slate-800 text-white shadow-sm border border-slate-700/30'
-                              : 'text-slate-400 hover:text-slate-200'
+                              ? 'bg-slate-800/80 text-slate-100 shadow-sm'
+                              : 'text-slate-500 hover:text-slate-300'
                           )}
                         >
-                          {label} ({count})
+                          {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
                         </button>
                       );
                     })}
