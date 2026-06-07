@@ -1,13 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Calendar, LayoutDashboard, Clock, BookOpen } from 'lucide-react';
+import { Calendar, LayoutDashboard, Clock, BookOpen, Menu } from 'lucide-react';
+import { useUIContext } from '@/context/UIContext';
 
 export function Header() {
   const pathname = usePathname();
+  const { sidebarOpen, setSidebarOpen } = useUIContext();
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname, setSidebarOpen]);
 
   const getDisplayDate = () => {
     return new Date().toLocaleDateString('en-US', {
@@ -47,7 +53,18 @@ export function Header() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              className={cn(
+                'p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition md:hidden',
+                sidebarOpen && 'text-emerald-400 bg-slate-900'
+              )}
+              aria-label="Toggle sidebar menu"
+            >
+              <Menu size={20} />
+            </button>
+            <nav className="flex items-center gap-1 sm:gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -69,6 +86,7 @@ export function Header() {
               );
             })}
           </nav>
+        </div>
 
           {/* Current Date */}
           <div className="inline-flex items-center gap-2 rounded-lg border border-slate-850 bg-slate-900/50 px-3 py-1.5 text-xs font-semibold text-slate-300" suppressHydrationWarning>
