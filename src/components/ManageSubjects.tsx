@@ -82,7 +82,7 @@ export default function ManageSubjects() {
 
 
   return (
-    <main className="min-h-screen bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-950 pt-8 pb-24 md:py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         
         {/* Header */}

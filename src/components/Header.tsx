@@ -54,17 +54,19 @@ export function Header() {
 
           {/* Navigation Links */}
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              className={cn(
-                'p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition md:hidden',
-                sidebarOpen && 'text-emerald-400 bg-slate-900'
-              )}
-              aria-label="Toggle sidebar menu"
-            >
-              <Menu size={20} />
-            </button>
-            <nav className="flex items-center gap-1 sm:gap-2">
+            {pathname === '/' && (
+              <button
+                onClick={() => setSidebarOpen((prev) => !prev)}
+                className={cn(
+                  'p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition md:hidden',
+                  sidebarOpen && 'text-emerald-400 bg-slate-900'
+                )}
+                aria-label="Toggle sidebar menu"
+              >
+                <Menu size={20} />
+              </button>
+            )}
+            <nav className="hidden md:flex items-center gap-1 sm:gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -96,6 +98,30 @@ export function Header() {
 
         </div>
       </div>
+
+      {/* Bottom Navigation Bar for Mobile */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-slate-800 bg-slate-950/95 backdrop-blur-md h-16 flex items-center justify-around md:hidden px-6">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex flex-col items-center justify-center gap-1 w-16 h-12 rounded-lg transition-all active:scale-95',
+                isActive
+                  ? 'text-emerald-400 font-bold'
+                  : 'text-slate-500 hover:text-slate-350'
+              )}
+            >
+              <Icon className={cn('h-5 w-5 transition-transform', isActive && 'scale-110')} />
+              <span className="text-[10px] tracking-tight">{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </header>
   );
 }
