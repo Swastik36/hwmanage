@@ -63,7 +63,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between gap-4">
           
           {/* Logo & Title */}
-          <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition">
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" className="h-7 w-7">
               <defs>
                 <linearGradient id="nav-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -81,12 +81,12 @@ export function Header() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-1.5 flex-1 md:justify-center">
+          <div className="flex items-center gap-1.5 md:flex-1 md:justify-center">
             {mounted && pathname === '/' && (
               <button
                 onClick={() => setSidebarOpen((prev) => !prev)}
                 className={cn(
-                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden mr-auto',
+                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
                   sidebarOpen && 'text-emerald-400 bg-hover-subtle'
                 )}
                 aria-label="Toggle sidebar menu"
@@ -109,7 +109,7 @@ export function Header() {
           </div>
 
           {/* Date & Theme Toggle */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 ml-auto md:ml-0">
             <div className="inline-flex items-center gap-2 rounded-lg border border-divider bg-surface/50 px-3 py-1.5 text-xs font-semibold text-secondary-text" suppressHydrationWarning>
               <Calendar className="h-3.5 w-3.5 text-emerald-400" />
               <span>{getDisplayDate()}</span>

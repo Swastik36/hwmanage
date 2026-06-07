@@ -334,7 +334,7 @@ export default function CreatorDashboard() {
                 <div className="max-w-md">
                   <BookOpen className="mx-auto h-10 w-10 text-secondary-text/60" />
                   <h2 className="mt-4 text-xl font-semibold text-primary-text">
-                    Select a subject from the left to start adding homework
+                    Select a subject <span className="hidden md:inline">from the left</span><span className="inline md:hidden">using the menu button at the top</span> to start adding homework
                   </h2>
                   <p className="mt-2 text-sm text-secondary-text">
                     Your selected subject will open here with presets, custom entry, and confirmation controls.
