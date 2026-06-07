@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
-      <body className="min-h-full flex flex-col font-sans bg-page text-primary-text">
+    <html lang="en" className="min-h-dvh antialiased" suppressHydrationWarning>
+      <body className="min-h-dvh flex flex-col font-sans bg-page text-primary-text">
         <HomeworkProvider>
           <UIProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">
