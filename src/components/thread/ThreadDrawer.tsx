@@ -124,67 +124,80 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
     if (!e.target.files) return;
 
     const selectedFiles = Array.from(e.target.files);
-    
-    // Check for any file exceeding the 5MB size limit (5 * 1024 * 1024 bytes)
-    const MAX_SIZE = 5 * 1024 * 1024;
-    const oversizedFiles = selectedFiles.filter((f) => f.size > MAX_SIZE);
-    
-    if (oversizedFiles.length > 0) {
-      const fileNames = oversizedFiles.map((f) => f.name).join(', ');
-      alert(`The following file(s) exceed the 5MB size limit and were skipped: ${fileNames}`);
-    }
-    
-    const validFiles = selectedFiles.filter((f) => f.size <= MAX_SIZE);
-    if (validFiles.length === 0) {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
-    }
-
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setIsCompressing(true);
-    const localBatchUrls: string[] = [];
-    try {
-      const processed = await Promise.all(
-        validFiles.map(async (file) => {
-          let blob: Blob;
-          let base64Url: string;
-          let previewUrl = '';
 
-          if (file.type.startsWith('image/')) {
+    const MAX_SIZE = 5 * 1024 * 1024;
+    const localBatchUrls: string[] = [];
+    const skippedFiles: string[] = [];
+    const processed: typeof attachments = [];
+
+    try {
+      for (const file of selectedFiles) {
+        let blob: Blob;
+        let previewUrl = '';
+
+        if (file.type.startsWith('image/')) {
+          try {
+            // Compress image first
             blob = await compressImage(file);
-            base64Url = await blobToBase64(blob);
-            
+            // Verify compressed image size
+            if (blob.size > MAX_SIZE) {
+              skippedFiles.push(`${file.name} (exceeds 5MB after compression)`);
+              continue;
+            }
             const objectUrl = URL.createObjectURL(blob);
             localBatchUrls.push(objectUrl);
             objectUrlsRef.current.push(objectUrl);
             previewUrl = objectUrl;
-          } else {
-            // PDF, text sheets, etc. - pass through unchanged
+          } catch (err) {
+            console.error('Compression failed for', file.name, err);
+            // Fallback to original file size check if compression fails
+            if (file.size > MAX_SIZE) {
+              skippedFiles.push(file.name);
+              continue;
+            }
             blob = file;
-            base64Url = await blobToBase64(file);
           }
+        } else {
+          // PDFs, Videos, sheets - check original size
+          if (file.size > MAX_SIZE) {
+            skippedFiles.push(file.name);
+            continue;
+          }
+          blob = file;
+        }
 
-          // Custom name parameter format embedded in Data URI to persist filename.
-          // Guard: if the URL already contains ;name= (e.g. refactored call path),
-          // skip re-injection to avoid producing a silently malformed Data URI.
-          const enrichedUrl = base64Url.includes(';name=')
-            ? base64Url
-            : base64Url.replace(
-                /^data:([^;]+);base64,/,
-                `data:$1;name=${encodeURIComponent(file.name)};base64,`
-              );
+        const base64Url = await blobToBase64(blob);
 
-          return {
-            previewUrl,
-            blob, // Final optimized binary ready to upload upstream
-            file,
-            url: enrichedUrl,
-          };
-        })
-      );
-      setAttachments((prev) => [...prev, ...processed]);
+        // Custom name parameter format embedded in Data URI to persist filename.
+        // Guard: if the URL already contains ;name= (e.g. refactored call path),
+        // skip re-injection to avoid producing a silently malformed Data URI.
+        const enrichedUrl = base64Url.includes(';name=')
+          ? base64Url
+          : base64Url.replace(
+              /^data:([^;]+);base64,/,
+              `data:$1;name=${encodeURIComponent(file.name)};base64,`
+            );
+
+        processed.push({
+          previewUrl,
+          blob, // Final optimized binary ready to upload upstream
+          file,
+          url: enrichedUrl,
+        });
+      }
+
+      if (skippedFiles.length > 0) {
+        alert(`The following file(s) exceed the 5MB size limit and were skipped:\n${skippedFiles.join('\n')}`);
+      }
+
+      if (processed.length > 0) {
+        setAttachments((prev) => [...prev, ...processed]);
+      }
     } catch (err) {
       console.error(err);
-      // Clean up object URLs created during this failed failed batch to prevent memory leaks
+      // Clean up object URLs created during this failed batch to prevent memory leaks
       localBatchUrls.forEach((url) => URL.revokeObjectURL(url));
       objectUrlsRef.current = objectUrlsRef.current.filter((url) => !localBatchUrls.includes(url));
       alert('Failed to process one or more files.');
@@ -236,6 +249,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
     // Clear revealed spoilers — fake client-side IDs are now stale
     // (Supabase returns real UUIDs after save, so the set would never match)
     setRevealedSpoilers(new Set());
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   if (!task) return null;
@@ -409,6 +423,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                                 objectUrlsRef.current = objectUrlsRef.current.filter((url) => url !== removed.previewUrl);
                               }
                               setAttachments((p) => p.filter((_, idx) => idx !== i));
+                              if (fileInputRef.current) fileInputRef.current.value = '';
                             }}
                             className="absolute -top-1.5 -right-1.5 p-0.5 bg-red-500 text-white rounded-full hover:bg-red-400 transition shadow-md"
                             title="Remove attachment"
