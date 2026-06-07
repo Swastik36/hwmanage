@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,12 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { sidebarOpen, setSidebarOpen } = useUIContext();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -76,16 +82,18 @@ export function Header() {
 
           {/* Navigation Links */}
           <div className="flex items-center gap-1.5 flex-1 justify-end md:justify-center">
-            <button
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              className={cn(
-                'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
-                sidebarOpen && 'text-emerald-400 bg-hover-subtle'
-              )}
-              aria-label="Toggle sidebar menu"
-            >
-              <Menu size={20} />
-            </button>
+            {mounted && pathname === '/' && (
+              <button
+                onClick={() => setSidebarOpen((prev) => !prev)}
+                className={cn(
+                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
+                  sidebarOpen && 'text-emerald-400 bg-hover-subtle'
+                )}
+                aria-label="Toggle sidebar menu"
+              >
+                <Menu size={20} />
+              </button>
+            )}
             <div className="hidden md:block">
               <ExpandableTabs
                 tabs={navItems.map((item) => ({

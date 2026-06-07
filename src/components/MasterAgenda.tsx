@@ -131,22 +131,22 @@ export default function MasterAgenda() {
             <p className="text-sm text-secondary-text">View and track all confirmed homework tasks across your courses.</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             {/* Add Task Button */}
             <button
               onClick={() => setIsAddTaskOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 text-xs font-bold transition-all active:scale-[0.98] cursor-pointer w-full sm:w-auto"
             >
               <Plus className="h-3.5 w-3.5 stroke-[3]" />
               <span>Add Task</span>
             </button>
 
             {/* Persistent Switch View Tabs */}
-            <div className="flex rounded-lg border border-divider bg-surface/60 p-1">
+            <div className="flex rounded-lg border border-divider bg-surface/60 p-1 w-full sm:w-auto">
               <button
                 onClick={() => handleViewModeChange('date')}
                 className={cn(
-                  'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'date'
                     ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
                     : 'text-secondary-text hover:text-primary-text'
@@ -158,7 +158,7 @@ export default function MasterAgenda() {
               <button
                 onClick={() => handleViewModeChange('subject')}
                 className={cn(
-                  'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'subject'
                     ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
                     : 'text-secondary-text hover:text-primary-text'
