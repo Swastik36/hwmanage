@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Header } from '@/components/Header';
 import { HomeworkProvider } from '@/context/HomeworkContext';
 import { UIProvider } from '@/context/UIContext';
@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
