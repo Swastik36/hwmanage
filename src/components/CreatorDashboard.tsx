@@ -318,7 +318,7 @@ export default function CreatorDashboard() {
       </MobileDrawer>
 
       {/* Right content */}
-      <div className="flex-1 pt-8 pb-24 md:pb-8 px-6 lg:px-8 space-y-6">
+      <div className="flex-1 pt-8 pb-20 md:pb-8 px-6 lg:px-8 space-y-6">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-2xl font-bold text-white tracking-tight">Creator Dashboard</h2>
           <p className="text-sm text-slate-400">
