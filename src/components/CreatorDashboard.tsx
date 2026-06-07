@@ -173,8 +173,133 @@ export default function CreatorDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <main className="flex min-h-screen bg-slate-950">
+      {/* Flush sidebar */}
+      <aside className="w-72 shrink-0 border-r border-slate-800 bg-slate-900/60 flex flex-col p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Subjects</h2>
+            <p className="mt-1 text-xs text-slate-400">Select one to open the panel.</p>
+          </div>
+          <BookOpen className="h-5 w-5 text-slate-500" />
+        </div>
+
+        {loading ? (
+          <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
+            Loading subjects...
+          </div>
+        ) : subjects.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
+            No subjects yet. Add one from subject settings.
+          </div>
+        ) : (
+          <>
+            {/* Search and Category Filters */}
+            <div className="mb-4 space-y-2.5">
+              {/* Search Bar */}
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="Search subjects..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-900/80 border border-slate-700/50 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+
+              {/* Category tabs */}
+              <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5">
+                {(['all', 'school', 'coaching'] as const).map((tab) => {
+                  const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
+                  
+                  const count = subjects.filter((s) => {
+                    if (tab === 'all') return true;
+                    const isCoaching = isCoachingSubject(s.name);
+                    return tab === 'coaching' ? isCoaching : !isCoaching;
+                  }).length;
+
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => {
+                        setActiveCategory(tab);
+                        setSelectedSubjectId(null);
+                      }}
+                      className={cn(
+                        'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
+                        activeCategory === tab
+                          ? 'bg-slate-700/70 text-slate-100'
+                          : 'text-slate-500 hover:text-slate-300'
+                      )}
+                    >
+                      {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {filteredSubjects.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-slate-800 px-4 py-6 text-center text-xs text-slate-500 bg-slate-950/20">
+                No matching subjects found.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
+                  {displayedSubjects.map((subject) => {
+                    const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
+                    const completedCount = subjectTasks.filter((item) => item.completed).length;
+                    const isActive = selectedSubjectId === subject.id;
+
+                    return (
+                      <SubjectCard
+                        key={subject.id}
+                        subject={subject}
+                        taskCount={subjectTasks.length}
+                        completedCount={completedCount}
+                        isSelected={isActive}
+                        onClick={() => handleSubjectSelect(subject.id)}
+                        variant="compact"
+                      />
+                    );
+                  })}
+                </div>
+
+                {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
+                  <div className="relative flex items-center justify-center">
+                    <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
+                    <button
+                      type="button"
+                      onClick={() => setExpanded((p) => !p)}
+                      className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                    >
+                      {expanded ? (
+                        <><ChevronUp size={12} strokeWidth={1.5} />show less</>
+                      ) : (
+                        <><ChevronDown size={12} strokeWidth={1.5} />{filteredSubjects.length - SUBJECT_VISIBLE_COUNT} more</>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </aside>
+
+      {/* Right content */}
+      <div className="flex-1 py-8 px-6 lg:px-8 space-y-6">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-2xl font-bold text-white tracking-tight">Creator Dashboard</h2>
           <p className="text-sm text-slate-400">
@@ -182,131 +307,9 @@ export default function CreatorDashboard() {
           </p>
         </div>
 
-        <section className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
-          <aside className="rounded-xl border border-slate-700/60 bg-slate-800/60 p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-white">Subjects</h2>
-                <p className="mt-1 text-xs text-slate-400">Select one to open the panel.</p>
-              </div>
-              <BookOpen className="h-5 w-5 text-slate-500" />
-            </div>
-
-            {loading ? (
-              <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
-                Loading subjects...
-              </div>
-            ) : subjects.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
-                No subjects yet. Add one from subject settings.
-              </div>
-            ) : (
-              <>
-                {/* Search and Category Filters */}
-                <div className="mb-4 space-y-2.5">
-                  {/* Search Bar */}
-                  <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input
-                      type="text"
-                      placeholder="Search subjects..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-slate-900/80 border border-slate-700/50 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition"
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
-                      >
-                        <X size={12} />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Category tabs */}
-                  <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5">
-                    {(['all', 'school', 'coaching'] as const).map((tab) => {
-                      const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
-                      
-                      const count = subjects.filter((s) => {
-                        if (tab === 'all') return true;
-                        const isCoaching = isCoachingSubject(s.name);
-                        return tab === 'coaching' ? isCoaching : !isCoaching;
-                      }).length;
-
-                      return (
-                        <button
-                          key={tab}
-                          type="button"
-                          onClick={() => {
-                            setActiveCategory(tab);
-                            setSelectedSubjectId(null);
-                          }}
-                          className={cn(
-                            'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
-                            activeCategory === tab
-                              ? 'bg-slate-700/70 text-slate-100'
-                              : 'text-slate-500 hover:text-slate-300'
-                          )}
-                        >
-                          {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {filteredSubjects.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-slate-800 px-4 py-6 text-center text-xs text-slate-500 bg-slate-950/20">
-                    No matching subjects found.
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
-                      {displayedSubjects.map((subject) => {
-                        const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
-                        const completedCount = subjectTasks.filter((item) => item.completed).length;
-                        const isActive = selectedSubjectId === subject.id;
-
-                        return (
-                          <SubjectCard
-                            key={subject.id}
-                            subject={subject}
-                            taskCount={subjectTasks.length}
-                            completedCount={completedCount}
-                            isSelected={isActive}
-                            onClick={() => handleSubjectSelect(subject.id)}
-                            variant="compact"
-                          />
-                        );
-                      })}
-                    </div>
-
-                    {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
-                      <div className="relative flex items-center justify-center">
-                        <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
-                        <button
-                          type="button"
-                          onClick={() => setExpanded((p) => !p)}
-                          className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
-                        >
-                          {expanded ? (
-                            <><ChevronUp size={12} strokeWidth={1.5} />show less</>
-                          ) : (
-                            <><ChevronDown size={12} strokeWidth={1.5} />{filteredSubjects.length - SUBJECT_VISIBLE_COUNT} more</>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </aside>
-
-          <section className="flex min-h-[400px] flex-col justify-between rounded-xl border border-slate-700 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 md:col-span-2">
+        <section className="flex flex-col gap-6">
+          {/* task panel — full width now, no md:col-span-2 */}
+          <section className="flex min-h-[400px] flex-col justify-between rounded-xl border border-slate-700 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
             {!selectedSubject ? (
               <div className="flex min-h-[352px] flex-1 items-center justify-center rounded-lg bg-slate-950/30 px-6 text-center">
                 <div className="max-w-md">
