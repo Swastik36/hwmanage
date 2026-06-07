@@ -221,7 +221,7 @@ export default function CreatorDashboard() {
             </div>
 
             {/* Category tabs */}
-            <div className="flex gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5">
+            <div className="grid grid-cols-3 gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5">
               {(['all', 'school', 'coaching'] as const).map((tab) => {
                 const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                 
@@ -240,7 +240,7 @@ export default function CreatorDashboard() {
                       setSelectedSubjectId(null);
                     }}
                     className={cn(
-                      'flex-grow sm:flex-grow-0 flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
+                      'px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
                       activeCategory === tab
                         ? 'bg-hover-subtle text-primary-text'
                         : 'text-secondary-text hover:text-primary-text'
