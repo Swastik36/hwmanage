@@ -181,18 +181,18 @@ export default function CreatorDashboard() {
     <>
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">Subjects</h2>
-          <p className="mt-1 text-xs text-slate-400">Select one to open the panel.</p>
+          <h2 className="text-lg font-semibold text-primary-text">Subjects</h2>
+          <p className="mt-1 text-xs text-secondary-text">Select one to open the panel.</p>
         </div>
-        <BookOpen className="h-5 w-5 text-slate-500" />
+        <BookOpen className="h-5 w-5 text-secondary-text" />
       </div>
 
       {loading ? (
-        <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-divider px-4 py-6 text-sm text-secondary-text">
           Loading subjects...
         </div>
       ) : subjects.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-700 px-4 py-6 text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-divider px-4 py-6 text-sm text-secondary-text">
           No subjects yet. Add one from subject settings.
         </div>
       ) : (
@@ -201,19 +201,19 @@ export default function CreatorDashboard() {
           <div className="mb-4 space-y-2.5">
             {/* Search Bar */}
             <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
               <input
                 type="text"
                 placeholder="Search subjects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900/80 border border-slate-700/50 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition"
+                className="w-full bg-surface border border-divider text-primary-text rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-secondary-text focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary-text transition"
                 >
                   <X size={12} />
                 </button>
@@ -221,7 +221,7 @@ export default function CreatorDashboard() {
             </div>
 
             {/* Category tabs */}
-            <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5">
+            <div className="flex gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5">
               {(['all', 'school', 'coaching'] as const).map((tab) => {
                 const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                 
@@ -242,11 +242,11 @@ export default function CreatorDashboard() {
                     className={cn(
                       'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                       activeCategory === tab
-                        ? 'bg-slate-700/70 text-slate-100'
-                        : 'text-slate-500 hover:text-slate-300'
+                        ? 'bg-hover-subtle text-primary-text'
+                        : 'text-secondary-text hover:text-primary-text'
                     )}
                   >
-                    {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
+                    {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-secondary-text' : 'text-secondary-text/60')}>{count}</span>
                   </button>
                 );
               })}
@@ -254,7 +254,7 @@ export default function CreatorDashboard() {
           </div>
 
           {filteredSubjects.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-slate-800 px-4 py-6 text-center text-xs text-slate-500 bg-slate-950/20">
+            <div className="rounded-lg border border-dashed border-divider px-4 py-6 text-center text-xs text-secondary-text bg-surface/20">
               No matching subjects found.
             </div>
           ) : (
@@ -284,11 +284,11 @@ export default function CreatorDashboard() {
 
               {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
                 <div className="relative flex items-center justify-center">
-                  <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
+                  <div className="absolute inset-x-0 top-1/2 h-px bg-divider" />
                   <button
                     type="button"
                     onClick={() => setExpanded((p) => !p)}
-                    className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                    className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-surface border border-divider text-secondary-text hover:text-primary-text hover:border-divider text-xs font-normal transition-all duration-200 cursor-pointer select-none"
                   >
                     {expanded ? (
                       <><ChevronUp size={12} strokeWidth={1.5} />show less</>
@@ -306,9 +306,9 @@ export default function CreatorDashboard() {
   );
 
   return (
-    <main className="flex min-h-screen bg-slate-950">
+    <main className="flex min-h-screen bg-page">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-72 shrink-0 border-r border-slate-800 bg-slate-900/60 flex-col p-3">
+      <aside className="hidden md:flex w-72 shrink-0 border-r border-divider bg-surface/60 flex-col p-3">
         {renderSidebarContents()}
       </aside>
 
@@ -320,23 +320,23 @@ export default function CreatorDashboard() {
       {/* Right content */}
       <div className="flex-1 pt-8 pb-20 md:pb-8 px-6 lg:px-8 space-y-6">
         <div className="flex flex-col gap-1.5">
-          <h2 className="text-2xl font-bold text-white tracking-tight">Creator Dashboard</h2>
-          <p className="text-sm text-slate-400">
+          <h2 className="text-2xl font-bold text-primary-text tracking-tight">Creator Dashboard</h2>
+          <p className="text-sm text-secondary-text">
             Select a subject to stage presets or type custom tasks, then confirm them to your agenda.
           </p>
         </div>
 
         <section className="flex flex-col gap-6">
           {/* task panel — full width now, no md:col-span-2 */}
-          <section className="flex min-h-[400px] flex-col justify-between rounded-xl border border-slate-700 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30">
+          <section className="flex min-h-[400px] flex-col justify-between rounded-xl border border-divider bg-surface/85 p-6 shadow-2xl shadow-divider/30">
             {!selectedSubject ? (
-              <div className="flex min-h-[352px] flex-1 items-center justify-center rounded-lg bg-slate-950/30 px-6 text-center">
+              <div className="flex min-h-[352px] flex-1 items-center justify-center rounded-lg bg-page/30 px-6 text-center">
                 <div className="max-w-md">
-                  <BookOpen className="mx-auto h-10 w-10 text-slate-600" />
-                  <h2 className="mt-4 text-xl font-semibold text-white">
+                  <BookOpen className="mx-auto h-10 w-10 text-secondary-text/60" />
+                  <h2 className="mt-4 text-xl font-semibold text-primary-text">
                     Select a subject from the left to start adding homework
                   </h2>
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-secondary-text">
                     Your selected subject will open here with presets, custom entry, and confirmation controls.
                   </p>
                 </div>
@@ -346,33 +346,33 @@ export default function CreatorDashboard() {
                 <div>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-slate-400">Selected subject</p>
-                      <h2 className="mt-1 text-2xl font-bold text-white">{selectedSubject.name}</h2>
+                      <p className="text-sm font-semibold text-secondary-text">Selected subject</p>
+                      <h2 className="mt-1 text-2xl font-bold text-primary-text">{selectedSubject.name}</h2>
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm font-semibold text-slate-200">
+                    <div className="inline-flex items-center gap-2 rounded-lg border border-divider bg-input/70 px-3 py-2 text-sm font-semibold text-primary-text">
                       <CalendarClock className="h-4 w-4 text-emerald-300" />
                       {displayDate}
                     </div>
                   </div>
 
-                  <div className="my-5 rounded-lg border border-slate-800 bg-slate-950/70 p-5">
+                  <div className="my-5 rounded-lg border border-divider bg-input/70 p-5">
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-200">
                         <ListTodo className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-400">Active preview</p>
+                        <p className="text-sm font-semibold text-secondary-text">Active preview</p>
                         {stagedTitle ? (
                           <>
-                            <h3 className="mt-1 break-words text-xl font-bold text-white">{stagedTitle}</h3>
-                            <p className="mt-2 text-sm text-slate-400">
+                            <h3 className="mt-1 break-words text-xl font-bold text-primary-text">{stagedTitle}</h3>
+                            <p className="mt-2 text-sm text-secondary-text">
                               Due {dueDate ? parseLocalDate(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'not set'} with {priority} priority.
                             </p>
                           </>
                         ) : (
                           <>
-                            <h3 className="mt-1 text-xl font-bold text-slate-200">No task staged yet</h3>
-                            <p className="mt-2 text-sm text-slate-500">
+                            <h3 className="mt-1 text-xl font-bold text-primary-text">No task staged yet</h3>
+                            <p className="mt-2 text-sm text-secondary-text/70">
                               Choose a preset or type a custom homework item below.
                             </p>
                           </>
@@ -380,14 +380,14 @@ export default function CreatorDashboard() {
                       </div>
                     </div>
 
-                    <div className="mt-5 border-t border-slate-800 pt-4">
+                    <div className="mt-5 border-t border-divider pt-4">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-slate-300">Added for {selectedSubject.name}</p>
-                        <span className="text-xs font-semibold text-slate-500">{selectedSubjectTasks.length} total</span>
+                        <p className="text-sm font-semibold text-primary-text">Added for {selectedSubject.name}</p>
+                        <span className="text-xs font-semibold text-secondary-text">{selectedSubjectTasks.length} total</span>
                       </div>
 
                       {selectedSubjectTasks.length === 0 ? (
-                        <p className="mt-3 rounded-lg border border-dashed border-slate-800 px-3 py-3 text-sm text-slate-500">
+                        <p className="mt-3 rounded-lg border border-dashed border-divider px-3 py-3 text-sm text-secondary-text">
                           No confirmed homework for this subject yet.
                         </p>
                       ) : (
@@ -395,9 +395,9 @@ export default function CreatorDashboard() {
                           {selectedSubjectTasks.slice(0, 3).map((task) => (
                             <div
                               key={task.id}
-                              className="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2"
+                              className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-surface/80 px-3 py-2"
                             >
-                              <span className="truncate text-sm font-semibold text-slate-200">{task.title}</span>
+                              <span className="truncate text-sm font-semibold text-primary-text">{task.title}</span>
                               {task.completed ? (
                                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300" />
                               ) : (
@@ -408,7 +408,7 @@ export default function CreatorDashboard() {
                             </div>
                           ))}
                           {selectedSubjectTasks.length > 3 && (
-                            <p className="text-xs text-slate-500 text-right mt-2 pr-1 font-semibold">
+                            <p className="text-xs text-secondary-text text-right mt-2 pr-1 font-semibold">
                               + {selectedSubjectTasks.length - 3} more task(s)...
                             </p>
                           )}
@@ -421,7 +421,7 @@ export default function CreatorDashboard() {
                 <div className="space-y-4">
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-slate-300">Ready-made options</p>
+                      <p className="text-sm font-semibold text-primary-text">Ready-made options</p>
                       {showMorePresets && <span className="text-xs font-semibold text-emerald-300">Expanded</span>}
                     </div>
                     <div className="flex flex-row items-center gap-2 overflow-x-auto pb-1">
@@ -431,10 +431,10 @@ export default function CreatorDashboard() {
                           type="button"
                           onClick={() => handlePresetSelect(preset)}
                           className={cn(
-                            'h-20 w-24 shrink-0 rounded-lg border px-2 text-center text-xs font-bold text-slate-100 transition hover:border-emerald-300 hover:bg-emerald-500/10',
+                            'h-20 w-24 shrink-0 rounded-lg border px-2 text-center text-xs font-bold text-primary-text transition hover:border-emerald-300 hover:bg-emerald-500/10',
                             stagedTitle === preset
                               ? 'border-emerald-300 bg-emerald-500/15 text-white'
-                              : 'border-slate-700 bg-slate-950/70'
+                              : 'border-divider bg-input/70'
                           )}
                         >
                           {preset}
@@ -444,7 +444,7 @@ export default function CreatorDashboard() {
                         type="button"
                         aria-label="Toggle more recommendations"
                         onClick={() => setShowMorePresets((current) => !current)}
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-950/70 text-slate-100 transition hover:border-emerald-300 hover:bg-emerald-500/10"
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-divider bg-input/70 text-primary-text transition hover:border-emerald-300 hover:bg-emerald-500/10"
                       >
                         <Plus className={cn('h-5 w-5 transition', showMorePresets && 'rotate-45')} />
                       </button>
@@ -453,21 +453,21 @@ export default function CreatorDashboard() {
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <label className="block">
-                      <span className="mb-1.5 block text-sm font-semibold text-slate-300">Due date</span>
+                      <span className="mb-1.5 block text-sm font-semibold text-primary-text">Due date</span>
                       <Input
                         type="date"
                         value={dueDate}
                         onChange={(event) => setDueDate(event.target.value)}
-                        className="border-slate-700 bg-slate-950 text-slate-100 focus:border-emerald-400 focus:ring-emerald-400/20"
+                        className="border-divider bg-input text-primary-text focus:border-emerald-400 focus:ring-emerald-400/20"
                       />
                     </label>
 
                     <label className="block">
-                      <span className="mb-1.5 block text-sm font-semibold text-slate-300">Priority</span>
+                      <span className="mb-1.5 block text-sm font-semibold text-primary-text">Priority</span>
                       <select
                         value={priority}
                         onChange={(event) => setPriority(event.target.value as Homework['priority'])}
-                        className="flex h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/20"
+                        className="flex h-11 w-full rounded-xl border border-divider bg-input px-3.5 py-2 text-sm text-primary-text transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/20"
                       >
                         {priorityOptions.map((option) => (
                           <option key={option} value={option}>
@@ -480,19 +480,19 @@ export default function CreatorDashboard() {
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                     <label className="block">
-                      <span className="mb-1.5 block text-sm font-semibold text-slate-300">Custom</span>
+                      <span className="mb-1.5 block text-sm font-semibold text-primary-text">Custom</span>
                       <Input
                         value={customTask}
                         onChange={(event) => handleCustomChange(event.target.value)}
                         placeholder="Type your own homework"
-                        className="border-slate-700 bg-slate-950 text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-emerald-400/20"
+                        className="border-divider bg-input text-primary-text placeholder:text-secondary-text focus:border-emerald-400 focus:ring-emerald-400/20"
                       />
                     </label>
 
                     <button
                       type="submit"
                       disabled={!stagedTitle || !selectedSubject}
-                      className="inline-flex h-11 items-center justify-center rounded-lg bg-emerald-500 px-6 text-sm font-bold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+                      className="inline-flex h-11 items-center justify-center rounded-lg bg-emerald-500 px-6 text-sm font-bold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-surface-elevated disabled:text-secondary-text/50"
                     >
                       Add
                     </button>
@@ -503,21 +503,21 @@ export default function CreatorDashboard() {
           </section>
         </section>
 
-        <section className="rounded-xl border border-slate-800 bg-slate-900/80 p-5">
+        <section className="rounded-xl border border-divider bg-surface/80 p-5">
           <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-white">Confirmed homework</h2>
-              <p className="text-sm text-slate-400">
+              <h2 className="text-xl font-bold text-primary-text">Confirmed homework</h2>
+              <p className="text-sm text-secondary-text">
                 {selectedSubject ? `Showing ${selectedSubject.name}` : 'Showing every saved subject'}
               </p>
             </div>
-            <span className="text-sm font-semibold text-slate-400">
+            <span className="text-sm font-semibold text-secondary-text">
               {visibleHomework.length} {visibleHomework.length === 1 ? 'item' : 'items'}
             </span>
           </div>
 
           {loading ? (
-            <div className="rounded-lg border border-dashed border-slate-700 px-4 py-8 text-center text-sm text-slate-400">
+            <div className="rounded-lg border border-dashed border-divider px-4 py-8 text-center text-sm text-secondary-text">
               Loading homework...
             </div>
           ) : (

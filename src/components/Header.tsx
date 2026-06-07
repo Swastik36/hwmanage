@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Calendar, LayoutDashboard, Clock, BookOpen, Menu } from 'lucide-react';
 import { useUIContext } from '@/context/UIContext';
 import { ExpandableTabs } from '@/components/ui/expandable-tabs';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Header() {
   const pathname = usePathname();
@@ -51,7 +52,7 @@ export function Header() {
   };
 
   return (
-    <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
+    <header className="border-b border-divider bg-page/80 backdrop-blur-md sticky top-0 z-40">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           
@@ -70,7 +71,7 @@ export function Header() {
               <rect x="21" y="48" width="5" height="5" rx="1.5" fill="white" />
               <rect x="21" y="60" width="5" height="5" rx="1.5" fill="white" />
             </svg>
-            <span className="hidden sm:inline text-lg font-bold text-white tracking-tight">Homework Manager</span>
+            <span className="hidden sm:inline text-lg font-bold text-primary-text tracking-tight">Homework Manager</span>
           </Link>
 
           {/* Navigation Links */}
@@ -79,8 +80,8 @@ export function Header() {
               <button
                 onClick={() => setSidebarOpen((prev) => !prev)}
                 className={cn(
-                  'p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition md:hidden',
-                  sidebarOpen && 'text-emerald-400 bg-slate-900'
+                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
+                  sidebarOpen && 'text-emerald-400 bg-hover-subtle'
                 )}
                 aria-label="Toggle sidebar menu"
               >
@@ -96,22 +97,25 @@ export function Header() {
                 activeTab={getActiveTabIdx()}
                 onChange={handleTabChange}
                 activeColor="text-emerald-400 font-bold"
-                className="border-slate-800/80 bg-slate-900/40 p-1"
+                className="border-divider bg-surface/40 p-1"
               />
             </div>
-        </div>
+          </div>
 
-          {/* Current Date */}
-          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-850 bg-slate-900/50 px-3 py-1.5 text-xs font-semibold text-slate-300" suppressHydrationWarning>
-            <Calendar className="h-3.5 w-3.5 text-emerald-400" />
-            <span>{getDisplayDate()}</span>
+          {/* Date & Theme Toggle */}
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-lg border border-divider bg-surface/50 px-3 py-1.5 text-xs font-semibold text-secondary-text" suppressHydrationWarning>
+              <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+              <span>{getDisplayDate()}</span>
+            </div>
+            <ThemeToggle />
           </div>
 
         </div>
       </div>
 
       {/* Bottom Navigation Bar for Mobile */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-slate-800 bg-slate-950/95 backdrop-blur-md h-16 flex items-center justify-around md:hidden px-6">
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-divider bg-page/95 backdrop-blur-md h-16 flex items-center justify-around md:hidden px-6">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -124,7 +128,7 @@ export function Header() {
                 'flex flex-col items-center justify-center gap-1 w-16 h-12 rounded-lg transition-all active:scale-95',
                 isActive
                   ? 'text-emerald-400 font-bold'
-                  : 'text-slate-500 hover:text-slate-350'
+                  : 'text-secondary-text hover:text-primary-text'
               )}
             >
               <Icon className={cn('h-5 w-5 transition-transform', isActive && 'scale-110')} />

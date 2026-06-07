@@ -121,14 +121,14 @@ export default function MasterAgenda() {
 
 
   return (
-    <main className="min-h-screen bg-slate-950 pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-page pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         
         {/* Header and Toggle Controls */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1.5">
-            <h2 className="text-2xl font-bold text-white tracking-tight">Master Agenda</h2>
-            <p className="text-sm text-slate-400">View and track all confirmed homework tasks across your courses.</p>
+            <h2 className="text-2xl font-bold text-primary-text tracking-tight">Master Agenda</h2>
+            <p className="text-sm text-secondary-text">View and track all confirmed homework tasks across your courses.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
@@ -142,14 +142,14 @@ export default function MasterAgenda() {
             </button>
 
             {/* Persistent Switch View Tabs */}
-            <div className="flex rounded-lg border border-slate-800 bg-slate-900/60 p-1">
+            <div className="flex rounded-lg border border-divider bg-surface/60 p-1">
               <button
                 onClick={() => handleViewModeChange('date')}
                 className={cn(
                   'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'date'
-                    ? 'bg-slate-850 border border-slate-700/50 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
+                    : 'text-secondary-text hover:text-primary-text'
                 )}
               >
                 <Calendar className="h-3.5 w-3.5" />
@@ -160,8 +160,8 @@ export default function MasterAgenda() {
                 className={cn(
                   'flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'subject'
-                    ? 'bg-slate-850 border border-slate-700/50 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
+                    : 'text-secondary-text hover:text-primary-text'
                 )}
               >
                 <BookOpen className="h-3.5 w-3.5" />
@@ -173,7 +173,7 @@ export default function MasterAgenda() {
 
         {/* Global Loading Spinner */}
         {loading ? (
-          <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+          <div className="rounded-xl border border-dashed border-divider py-16 text-center text-sm text-secondary-text bg-surface/50">
             Loading your agenda...
           </div>
         ) : (
@@ -188,7 +188,7 @@ export default function MasterAgenda() {
                     <span>Due Today / Overdue</span>
                   </h3>
                   {dateGroups.overdueOrToday.length === 0 ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-divider bg-surface/30 px-5 py-4 text-sm text-secondary-text">
                       <Sparkles className="h-5 w-5 text-emerald-400" />
                       <span>🎉 No homework due today! Time to relax or get ahead.</span>
                     </div>
@@ -211,7 +211,7 @@ export default function MasterAgenda() {
                     <span>Due Tomorrow</span>
                   </h3>
                   {dateGroups.dueTomorrow.length === 0 ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-divider bg-surface/30 px-5 py-4 text-sm text-secondary-text">
                       <Smile className="h-5 w-5 text-amber-400" />
                       <span>🌅 Free evening tomorrow! No tasks scheduled.</span>
                     </div>
@@ -234,7 +234,7 @@ export default function MasterAgenda() {
                     <span>Later This Week & Beyond</span>
                   </h3>
                   {dateGroups.laterThisWeek.length === 0 ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-900/30 px-5 py-4 text-sm text-slate-400">
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-divider bg-surface/30 px-5 py-4 text-sm text-secondary-text">
                       <Calendar className="h-5 w-5 text-indigo-400" />
                       <span>📅 No upcoming tasks. You are all caught up!</span>
                     </div>
@@ -249,10 +249,10 @@ export default function MasterAgenda() {
                     />
                   )}
                 </div>
-
+ 
                 {/* 4. Completed Tasks Section */}
                 {dateGroups.completed.length > 0 && (
-                  <div className="space-y-3 pt-4 border-t border-slate-900">
+                  <div className="space-y-3 pt-4 border-t border-divider">
                     <h3 className="flex items-center gap-2 text-base font-bold text-emerald-400 uppercase tracking-wider">
                       <CheckCircle2 className="h-4 w-4" />
                       <span>Completed Tasks</span>
@@ -273,32 +273,31 @@ export default function MasterAgenda() {
             {/* View B: Group by Subject (Grid View) */}
             {viewMode === 'subject' && (
               <div className="space-y-6">
-                {/* Search and Filter Controls */}
                 {subjects.length > 0 && (
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface/40 p-4 border border-divider/60 rounded-xl">
                     {/* Search Bar */}
                     <div className="relative w-full sm:max-w-xs">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
                       <input
                         type="text"
                         placeholder="Search subjects..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                        className="w-full bg-input border border-divider text-primary-text rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-secondary-text focus:outline-none focus:border-emerald-500/50 transition"
                       />
                       {searchQuery && (
                         <button
                           type="button"
                           onClick={() => setSearchQuery('')}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary-text transition"
                         >
                           <X size={12} />
                         </button>
                       )}
                     </div>
-
+ 
                     {/* Category tabs */}
-                    <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5 w-full sm:w-auto">
+                    <div className="flex gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5 w-full sm:w-auto">
                       {(['all', 'school', 'coaching'] as const).map((tab) => {
                         const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                         
@@ -316,11 +315,11 @@ export default function MasterAgenda() {
                             className={cn(
                               'flex-1 sm:flex-none px-3 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
                               activeCategory === tab
-                                ? 'bg-slate-700/70 text-slate-100 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-300'
+                                ? 'bg-hover-subtle text-primary-text shadow-sm'
+                                : 'text-secondary-text hover:text-primary-text'
                             )}
                           >
-                            {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-slate-400' : 'text-slate-600')}>{count}</span>
+                            {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-secondary-text' : 'text-secondary-text/60')}>{count}</span>
                           </button>
                         );
                       })}
@@ -329,7 +328,7 @@ export default function MasterAgenda() {
                 )}
 
                 {filteredSubjects.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-400 bg-slate-900/50">
+                  <div className="rounded-xl border border-dashed border-divider py-16 text-center text-sm text-secondary-text bg-surface/50">
                     {subjects.length === 0 
                       ? <>No subjects defined. Add one in <Link href="/subjects" className="text-emerald-400 hover:underline">Subjects</Link>.</>
                       : <>No matching subjects found.</>}
@@ -343,30 +342,30 @@ export default function MasterAgenda() {
                         const color = colorMap[sub.color] ?? colorMap.indigo;
 
                         return (
-                          <Card key={sub.id} className="border-slate-800 bg-slate-900/80 flex flex-col justify-between overflow-hidden hover:border-slate-700 transition-all duration-300">
+                          <Card key={sub.id} className="border-divider bg-surface/80 flex flex-col justify-between overflow-hidden hover:border-divider/80 transition-all duration-300">
                             <div>
                               {/* Subject Header Ribbon */}
                               <div className={cn('h-1.5', color.ribbon)} />
                               <CardHeader className="p-4">
-                                <CardTitle className="text-base flex items-center justify-between text-white font-bold">
+                                <CardTitle className="text-base flex items-center justify-between text-primary-text font-bold">
                                   <span className="truncate">{sub.name}</span>
                                   <span className={cn('text-2xs font-semibold px-2 py-0.5 rounded-full border', color.bg, color.text, color.border)}>
                                     {activeSubTasks.length} pending
                                   </span>
                                 </CardTitle>
                               </CardHeader>
-
+ 
                               {/* Task List Inside Subject Card */}
                               <CardContent className="p-4 pt-0 space-y-3">
                                 {activeSubTasks.length === 0 ? (
-                                  <p className="text-xs text-slate-500 italic py-2">No active homework assignments.</p>
+                                  <p className="text-xs text-secondary-text italic py-2">No active homework assignments.</p>
                                 ) : (
                                   <div className="space-y-2">
                                     {activeSubTasks.map((task) => (
                                       <div
                                         key={task.id}
                                         onClick={() => setActiveTaskForThreadId(task.id)}
-                                        className="group/item flex items-center justify-between gap-2 rounded-lg border border-slate-800/80 bg-slate-950/60 p-2.5 hover:border-slate-700 transition cursor-pointer active:scale-[0.985]"
+                                        className="group/item flex items-center justify-between gap-2 rounded-lg border border-divider bg-input/60 p-2.5 hover:border-divider transition cursor-pointer active:scale-[0.985]"
                                       >
                                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                           {/* Interactive Checkbox */}
@@ -375,14 +374,14 @@ export default function MasterAgenda() {
                                               e.stopPropagation();
                                               toggleHomework(task.id);
                                             }}
-                                            className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600 hover:border-slate-400"
+                                            className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-divider hover:border-divider/80"
                                           >
-                                            <div className="h-2 w-2 rounded-2xs bg-transparent group-hover/item:bg-slate-750 transition" />
+                                            <div className="h-2 w-2 rounded-2xs bg-transparent group-hover/item:bg-hover-subtle transition" />
                                           </button>
                                           
                                           <div className="min-w-0 flex-1">
-                                            <p className="truncate text-xs font-semibold text-slate-200">{task.title}</p>
-                                            <p className="text-3xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                            <p className="truncate text-xs font-semibold text-primary-text">{task.title}</p>
+                                            <p className="text-3xs text-secondary-text mt-0.5 flex items-center gap-1.5 flex-wrap">
                                               <span>Due {formatDate(task.dueDate, false)}</span>
                                               <span>•</span>
                                               <span>{task.priority}</span>
@@ -405,7 +404,7 @@ export default function MasterAgenda() {
                                             e.stopPropagation();
                                             deleteHomework(task.id);
                                           }}
-                                          className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-900/60 transition"
+                                          className="p-1 text-secondary-text hover:text-red-400 rounded-md hover:bg-hover-subtle transition"
                                         >
                                           <Trash2 className="h-3.5 w-3.5" />
                                         </button>
@@ -416,14 +415,14 @@ export default function MasterAgenda() {
 
                                 {/* Completed Section for visual completion feedback */}
                                 {completedSubTasks.length > 0 && (
-                                  <div className="mt-4 border-t border-slate-800/60 pt-3">
-                                    <p className="text-3xs font-bold text-slate-500 uppercase tracking-wider mb-2">Completed</p>
+                                  <div className="mt-4 border-t border-divider/60 pt-3">
+                                    <p className="text-3xs font-bold text-secondary-text uppercase tracking-wider mb-2">Completed</p>
                                     <div className="space-y-1.5 opacity-60">
                                       {completedSubTasks.map((task) => (
                                         <div
                                           key={task.id}
                                           onClick={() => setActiveTaskForThreadId(task.id)}
-                                          className="flex items-center justify-between gap-2 rounded-lg border border-slate-850 bg-slate-900/30 p-2 cursor-pointer active:scale-[0.985] hover:border-slate-700 transition"
+                                          className="flex items-center justify-between gap-2 rounded-lg border border-divider bg-surface/30 p-2 cursor-pointer active:scale-[0.985] hover:border-divider transition"
                                         >
                                           <div className="flex items-center gap-2 min-w-0">
                                             <button
@@ -431,19 +430,19 @@ export default function MasterAgenda() {
                                                 e.stopPropagation();
                                                 toggleHomework(task.id);
                                               }}
-                                              className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/20 text-emerald-400 hover:text-slate-400 hover:border-slate-500 transition"
+                                              className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/20 text-emerald-400 hover:text-secondary-text hover:border-divider transition"
                                               aria-label="Reopen homework task"
                                             >
                                               <CheckCircle2 className="h-3.5 w-3.5" />
                                             </button>
-                                            <span className="truncate text-xs text-slate-400 line-through">{task.title}</span>
+                                            <span className="truncate text-xs text-secondary-text line-through">{task.title}</span>
                                           </div>
                                           <button
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               deleteHomework(task.id);
                                             }}
-                                            className="p-1 text-slate-600 hover:text-red-400 rounded transition"
+                                            className="p-1 text-secondary-text hover:text-red-400 rounded transition"
                                           >
                                             <Trash2 className="h-3 w-3" />
                                           </button>
@@ -461,11 +460,11 @@ export default function MasterAgenda() {
 
                     {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
                       <div className="relative flex items-center justify-center mt-1">
-                        <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800/60" />
+                        <div className="absolute inset-x-0 top-1/2 h-px bg-divider" />
                         <button
                           type="button"
                           onClick={() => setExpanded((p) => !p)}
-                          className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                          className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-surface border border-divider text-secondary-text hover:text-primary-text hover:border-divider text-xs font-normal transition-all duration-200 cursor-pointer select-none"
                         >
                           {expanded ? (
                             <><ChevronUp size={12} strokeWidth={1.5} />show less</>

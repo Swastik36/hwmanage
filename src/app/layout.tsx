@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Header } from '@/components/Header';
 import { HomeworkProvider } from '@/context/HomeworkContext';
 import { UIProvider } from '@/context/UIContext';
+import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -23,12 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased dark">
-      <body className="min-h-full flex flex-col font-sans bg-slate-950 text-slate-50">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col font-sans bg-page text-primary-text">
         <HomeworkProvider>
           <UIProvider>
-            <Header />
-            {children}
+            <ThemeProvider attribute="class" defaultTheme="dark">
+              <Header />
+              {children}
+            </ThemeProvider>
           </UIProvider>
         </HomeworkProvider>
       </body>

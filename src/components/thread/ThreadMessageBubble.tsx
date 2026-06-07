@@ -34,15 +34,15 @@ export function ThreadMessageBubble({
       <div className="flex-1 min-w-0">
         {/* Author + timestamp */}
         <div className="flex items-baseline gap-2">
-          <span className="text-xs font-bold text-slate-200">{msg.authorName}</span>
-          <span className="text-3xs text-slate-500">
+          <span className="text-xs font-bold text-primary-text">{msg.authorName}</span>
+          <span className="text-3xs text-secondary-text">
             {parseLocalDateTime(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
 
         {/* Text bubble */}
         {msg.text && (
-          <div className="mt-1 text-xs text-slate-200 bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 leading-relaxed break-words whitespace-pre-wrap">
+          <div className="mt-1 text-xs text-primary-text bg-surface border border-divider/80 rounded-xl p-2.5 leading-relaxed break-words whitespace-pre-wrap">
             {msg.text}
           </div>
         )}
@@ -70,8 +70,8 @@ export function ThreadMessageBubble({
                     }
                   }}
                   className={cn(
-                    'relative w-28 h-28 rounded-lg overflow-hidden border border-slate-800 cursor-pointer bg-slate-950 flex items-center justify-center transition-all duration-300',
-                    isBlurred ? 'ring-1 ring-amber-500/30' : 'hover:border-slate-600 hover:scale-[1.02]'
+                    'relative w-28 h-28 rounded-lg overflow-hidden border border-divider cursor-pointer bg-input flex items-center justify-center transition-all duration-300',
+                    isBlurred ? 'ring-1 ring-amber-500/30' : 'hover:border-divider/80 hover:scale-[1.02]'
                   )}
                 >
                   {parsed.isImage ? (
@@ -86,10 +86,10 @@ export function ThreadMessageBubble({
                   ) : (
                     <div className="flex flex-col items-center justify-center p-3 text-center h-full w-full">
                       <FileText size={24} className={cn('text-emerald-400 mb-1.5', isBlurred && 'blur-[2px]')} />
-                      <span className={cn('text-4xs font-semibold text-slate-300 line-clamp-2 px-1 break-all', isBlurred && 'blur-[3px] select-none')}>
+                      <span className={cn('text-4xs font-semibold text-primary-text line-clamp-2 px-1 break-all', isBlurred && 'blur-[3px] select-none')}>
                         {parsed.fileName}
                       </span>
-                      <span className="text-5xs text-slate-500 mt-1 uppercase tracking-wider">
+                      <span className="text-5xs text-secondary-text mt-1 uppercase tracking-wider">
                         {parsed.mimeType.split('/')[1] || 'FILE'}
                       </span>
                     </div>
@@ -97,10 +97,10 @@ export function ThreadMessageBubble({
 
                   {/* Spoiler overlay */}
                   {isBlurred && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-slate-950/60 backdrop-blur-sm">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-page/60 backdrop-blur-sm">
                       <EyeOff size={16} className="text-amber-400 mb-1" />
                       <span className="text-3xs font-extrabold text-amber-400 tracking-wide uppercase">Spoiler</span>
-                      <span className="text-4xs text-slate-300 mt-0.5">Click to reveal</span>
+                      <span className="text-4xs text-primary-text mt-0.5">Click to reveal</span>
                     </div>
                   )}
 
@@ -108,7 +108,7 @@ export function ThreadMessageBubble({
                   {att.isSpoiler && !isBlurred && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onRevealSpoiler(att.id); }}
-                      className="absolute top-1.5 right-1.5 p-1 bg-slate-950/80 border border-slate-800 rounded-md text-amber-400 hover:text-amber-300 hover:bg-slate-900 transition"
+                      className="absolute top-1.5 right-1.5 p-1 bg-input/80 border border-divider rounded-md text-amber-400 hover:text-amber-300 hover:bg-hover-subtle transition"
                       title="Hide spoiler"
                     >
                       <Eye size={10} />

@@ -63,17 +63,17 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-page/60 backdrop-blur-sm animate-fade-in">
       {/* Backdrop click to close */}
       <div className="absolute inset-0" onClick={handleClose} />
 
       {/* Modal Box */}
-      <div className="relative w-full max-w-md bg-slate-900/90 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden z-10 animate-scale-in">
-        <div className="flex items-center justify-between p-5 border-b border-slate-800/80">
-          <h3 className="text-lg font-bold text-white">Add Homework Task</h3>
+      <div className="relative w-full max-w-md bg-surface/90 rounded-2xl shadow-2xl border border-divider overflow-hidden z-10 animate-scale-in">
+        <div className="flex items-center justify-between p-5 border-b border-divider">
+          <h3 className="text-lg font-bold text-primary-text">Add Homework Task</h3>
           <button
             onClick={handleClose}
-            className="p-1 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1 text-secondary-text hover:text-primary-text rounded-lg hover:bg-hover-subtle transition-colors"
           >
             <X size={18} />
           </button>
@@ -89,21 +89,21 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
 
           {/* Title */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Task Title *</label>
+            <label className="block text-xs font-semibold text-secondary-text uppercase tracking-wider mb-1.5">Task Title *</label>
             <Input
               type="text"
               placeholder="e.g. Finish chemistry project"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border-slate-700 bg-slate-950 text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-emerald-400/20"
+              className="border-divider bg-input text-primary-text placeholder:text-secondary-text focus:border-emerald-400 focus:ring-emerald-400/20"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Description</label>
+            <label className="block text-xs font-semibold text-secondary-text uppercase tracking-wider mb-1.5">Description</label>
             <textarea
-              className="flex w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
+              className="flex w-full rounded-xl border border-divider bg-input px-3.5 py-2.5 text-sm text-primary-text placeholder:text-secondary-text focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
               rows={3}
               placeholder="Add details, chapters, page numbers, etc."
               value={description}
@@ -115,15 +115,15 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
           <div className="grid grid-cols-2 gap-4">
             {/* Subject */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Subject *</label>
+              <label className="block text-xs font-semibold text-secondary-text uppercase tracking-wider mb-1.5">Subject *</label>
               <select
-                className="flex h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all duration-200"
+                className="flex h-11 w-full rounded-xl border border-divider bg-input px-3 py-2 text-sm text-primary-text focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all duration-200"
                 value={subjectId}
                 onChange={(e) => setSubjectId(e.target.value)}
               >
-                <option value="" className="bg-slate-900">Select subject</option>
+                <option value="" className="bg-surface">Select subject</option>
                 {subjects.map((sub) => (
-                  <option key={sub.id} value={sub.id} className="bg-slate-900">
+                  <option key={sub.id} value={sub.id} className="bg-surface">
                     {sub.name}
                   </option>
                 ))}
@@ -132,19 +132,19 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
 
             {/* Due Date */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Due Date *</label>
+              <label className="block text-xs font-semibold text-secondary-text uppercase tracking-wider mb-1.5">Due Date *</label>
               <Input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="border-slate-700 bg-slate-950 text-slate-100 focus:border-emerald-400 focus:ring-emerald-400/20"
+                className="border-divider bg-input text-primary-text focus:border-emerald-400 focus:ring-emerald-400/20"
               />
             </div>
           </div>
 
           {/* Priority */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Priority</label>
+            <label className="block text-xs font-semibold text-secondary-text uppercase tracking-wider mb-2">Priority</label>
             <div className="grid grid-cols-3 gap-2">
               {(['low', 'medium', 'high'] as const).map((p) => (
                 <button
@@ -158,7 +158,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
                         : p === 'medium'
                         ? 'bg-amber-500/15 border-amber-500 text-amber-200 font-bold ring-2 ring-amber-500/20'
                         : 'bg-emerald-500/15 border-emerald-500 text-emerald-200 font-bold ring-2 ring-emerald-500/20'
-                      : 'bg-slate-950 border-slate-750 text-slate-400 hover:bg-slate-900'
+                      : 'bg-input border-divider text-secondary-text hover:bg-hover-subtle'
                   }`}
                 >
                   {p}
@@ -168,11 +168,11 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, subjects }: AddTaskMod
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800/85">
+          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-divider">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-750 text-slate-300 hover:bg-slate-800 transition"
+              className="px-4 py-2 text-sm font-semibold rounded-lg border border-divider text-primary-text hover:bg-hover-subtle transition"
             >
               Cancel
             </button>

@@ -89,9 +89,9 @@ export function SubjectCard({
           'flex w-full items-center justify-between rounded-lg border px-4 py-3.5 text-left transition-all duration-150 active:scale-[0.99] focus:outline-none',
           isSelected
             ? isCoaching
-              ? 'border-amber-500/30 bg-amber-500/10 ring-1 ring-amber-500/15 text-white'
-              : 'border-indigo-500/30 bg-indigo-500/10 ring-1 ring-indigo-500/15 text-white'
-            : 'border-slate-700/20 bg-slate-800/20 text-slate-300 hover:bg-slate-800/40 hover:border-slate-700/40'
+              ? 'border-amber-500/30 bg-amber-500/10 ring-1 ring-amber-500/15 text-primary-text'
+              : 'border-indigo-500/30 bg-indigo-500/10 ring-1 ring-indigo-500/15 text-primary-text'
+            : 'border-divider/20 bg-surface/20 text-secondary-text hover:bg-surface/40 hover:border-divider/40'
         )}
       >
         <span className="flex min-w-0 items-center gap-3">
@@ -102,8 +102,8 @@ export function SubjectCard({
             )}
           />
           <span className="min-w-0">
-            <span className="block truncate text-sm font-medium text-slate-200">{subject.name}</span>
-            <span className="mt-1 block text-xs text-slate-400">
+            <span className="block truncate text-sm font-medium text-primary-text">{subject.name}</span>
+            <span className="mt-1 block text-xs text-secondary-text">
               {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
             </span>
           </span>
@@ -127,7 +127,7 @@ export function SubjectCard({
         <div className="h-1.5 bg-red-500" />
         <CardContent className="p-5 flex flex-col justify-between h-44">
           <div className="flex-1 flex flex-col justify-center text-center">
-            <h4 className="font-bold text-white text-sm">Delete {subject.name}?</h4>
+            <h4 className="font-bold text-primary-text text-sm">Delete {subject.name}?</h4>
             <p className="text-3xs text-red-300 mt-1 leading-relaxed">
               This action cannot be undone.
             </p>
@@ -136,7 +136,7 @@ export function SubjectCard({
             <button
               type="button"
               onClick={() => setIsConfirmingDelete(false)}
-              className="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition cursor-pointer select-none"
+              className="flex-1 py-1.5 rounded-lg bg-surface hover:bg-hover-subtle text-xs font-semibold text-primary-text border border-divider transition cursor-pointer select-none"
             >
               Cancel
             </button>
@@ -156,16 +156,16 @@ export function SubjectCard({
   }
 
   return (
-    <Card className="border-slate-800 bg-slate-900/80 overflow-hidden hover:border-slate-700 transition-all duration-300">
+    <Card className="border-divider bg-surface/80 overflow-hidden hover:border-divider/85 transition-all duration-300">
       <div className={cn('h-1.5', accent.progressBar)} />
       <CardContent className="p-5 flex flex-col justify-between h-44">
         <div>
           <div className="flex justify-between items-start">
-            <div className={cn('p-1.5 rounded-lg text-slate-950', accent.progressBar)}>
+            <div className={cn('p-1.5 rounded-lg text-white', accent.progressBar)}>
               <BookOpen size={14} className="stroke-[3]" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 uppercase tracking-wider">
+              <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-surface-elevated text-secondary-text uppercase tracking-wider">
                 {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
               </span>
               {variant === 'grid' && onDelete && (
@@ -175,7 +175,7 @@ export function SubjectCard({
                     e.stopPropagation();
                     setIsConfirmingDelete(true);
                   }}
-                  className="p-1 text-slate-500 hover:text-red-400 rounded-md hover:bg-slate-800/80 transition cursor-pointer"
+                  className="p-1 text-secondary-text hover:text-red-400 rounded-md hover:bg-hover-subtle transition cursor-pointer"
                   title="Delete subject"
                 >
                   <Trash2 size={13} />
@@ -184,9 +184,9 @@ export function SubjectCard({
             </div>
           </div>
 
-          <h4 className="mt-3 font-bold text-white text-base truncate">{subject.name}</h4>
+          <h4 className="mt-3 font-bold text-primary-text text-base truncate">{subject.name}</h4>
           
-          <div className="mt-3 text-xs text-slate-400 space-y-1">
+          <div className="mt-3 text-xs text-secondary-text space-y-1">
             <div className="flex justify-between">
               <span>Completed tasks:</span>
               <span className="font-semibold text-emerald-400">{completedCount}</span>
@@ -200,11 +200,11 @@ export function SubjectCard({
 
         {/* Progress bar */}
         <div className="mt-2">
-          <div className="flex justify-between items-center text-3xs text-slate-500 font-bold mb-1 uppercase tracking-wider">
+          <div className="flex justify-between items-center text-3xs text-secondary-text font-bold mb-1 uppercase tracking-wider">
             <span>Progress</span>
             <span>{completionRate}%</span>
           </div>
-          <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
+          <div className="w-full bg-page h-1.5 rounded-full overflow-hidden border border-divider">
             <div
               className={cn('h-full transition-all duration-500', accent.progressBar)}
               style={{ width: `${completionRate}%` }}

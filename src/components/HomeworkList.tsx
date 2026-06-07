@@ -56,8 +56,8 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
   const getDueDateStatus = (dateStr: string, completed: boolean) => {
     if (completed) {
       return {
-        text: 'text-slate-400 dark:text-slate-500',
-        bg: 'bg-slate-50 dark:bg-slate-900/50',
+        text: 'text-secondary-text',
+        bg: 'bg-surface/50',
         status: 'completed',
       };
     }
@@ -83,8 +83,8 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
     }
 
     return {
-      text: 'text-slate-500 dark:text-slate-400',
-      bg: 'bg-slate-50 dark:bg-slate-800/40',
+      text: 'text-secondary-text',
+      bg: 'bg-surface/40',
       status: 'upcoming',
     };
   };
@@ -99,7 +99,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
       case 'today':
         return <Clock size={13} className="text-amber-500" />;
       default:
-        return <Calendar size={13} className="text-slate-400" />;
+        return <Calendar size={13} className="text-secondary-text" />;
     }
   };
 
@@ -118,10 +118,10 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
   return (
     <div className="space-y-3.5">
       {homework.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-          <CheckCircle2 className="h-10 w-10 text-slate-300 dark:text-slate-700 mb-3" />
-          <h3 className="font-semibold text-slate-700 dark:text-slate-300 text-lg">All caught up!</h3>
-          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mt-1">No homework found for this selection. Have a great day!</p>
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-surface/50 rounded-2xl border border-dashed border-divider">
+          <CheckCircle2 className="h-10 w-10 text-secondary-text/60 mb-3" />
+          <h3 className="font-semibold text-primary-text text-lg">All caught up!</h3>
+          <p className="text-secondary-text text-sm max-w-xs mt-1">No homework found for this selection. Have a great day!</p>
         </div>
       ) : (
         homework.map((item) => {
@@ -134,7 +134,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                 key={item.id}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onClick={(e) => e.stopPropagation()}
-                className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-xl border bg-slate-900/60 border-slate-800"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-xl border bg-surface/60 border-divider"
               >
                 <div className="flex flex-col sm:flex-row flex-1 gap-2.5 min-w-0">
                   <input
@@ -142,19 +142,19 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     autoFocus
-                    className="flex-1 min-w-[150px] bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                    className="flex-1 min-w-[150px] bg-input border border-divider text-primary-text rounded-lg px-3 py-1.5 text-sm placeholder:text-secondary-text focus:outline-none focus:border-emerald-500/50 transition"
                     placeholder="Task title"
                   />
                   <input
                     type="date"
                     value={editDueDate}
                     onChange={(e) => setEditDueDate(e.target.value)}
-                    className="w-full sm:w-36 bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
+                    className="w-full sm:w-36 bg-input border border-divider text-primary-text rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
                   />
                   <select
                     value={editPriority}
                     onChange={(e) => setEditPriority(e.target.value as Homework['priority'])}
-                    className="w-full sm:w-28 bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
+                    className="w-full sm:w-28 bg-input border border-divider text-primary-text rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -174,7 +174,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                   <button
                     type="button"
                     onClick={() => setEditingId(null)}
-                    className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-850 rounded-lg transition"
+                    className="p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition"
                     aria-label="Cancel editing"
                   >
                     <X size={16} />
@@ -191,8 +191,8 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
               className={cn(
                 'group flex items-center justify-between p-4 rounded-xl border transition-all duration-200 hover:shadow-sm cursor-pointer active:scale-[0.995]',
                 item.completed
-                  ? 'bg-slate-50/50 dark:bg-slate-950/40 border-slate-50 dark:border-slate-900'
-                  : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
+                  ? 'bg-surface/30 border-divider/40'
+                  : 'bg-surface border-divider hover:border-divider/80'
               )}
             >
               <div className="flex items-center space-x-3.5 flex-1 min-w-0">
@@ -206,7 +206,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     'flex items-center justify-center w-5.5 h-5.5 rounded-md border-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
                     item.completed
                       ? 'bg-indigo-600 border-indigo-600 text-white'
-                      : 'border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
+                      : 'border-divider hover:border-divider/80'
                   )}
                 >
                   {item.completed && <CheckCircle2 size={14} className="stroke-[3]" />}
@@ -218,14 +218,14 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                       className={cn(
                         'text-sm sm:text-base leading-snug truncate',
                         item.completed
-                          ? 'line-through text-slate-400 dark:text-slate-500 font-normal'
-                          : 'font-semibold text-slate-800 dark:text-slate-100'
+                          ? 'line-through text-secondary-text/80 font-normal'
+                          : 'font-semibold text-primary-text'
                       )}
                     >
                       {item.title}
                     </h5>
                     {subject && (
-                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 uppercase tracking-wider">
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full bg-surface-elevated text-secondary-text uppercase tracking-wider">
                         {subject.name}
                       </span>
                     )}
@@ -239,8 +239,8 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                       className={cn(
                         'text-xs mt-1 max-w-lg truncate', 
                         item.completed 
-                          ? 'text-slate-400/80 dark:text-slate-500/80 line-through' 
-                          : 'text-slate-500 dark:text-slate-400'
+                          ? 'text-secondary-text/60 line-through' 
+                          : 'text-secondary-text'
                       )}
                     >
                       {item.description}
@@ -274,7 +274,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     e.stopPropagation();
                     startEditing(item);
                   }}
-                  className="p-2 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 text-secondary-text hover:text-indigo-400 rounded-lg hover:bg-hover-subtle transition-colors"
                   aria-label="Edit homework"
                 >
                   <Pencil size={16} />
@@ -284,7 +284,7 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                     e.stopPropagation();
                     onDelete(item.id);
                   }}
-                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 text-secondary-text hover:text-red-500 rounded-lg hover:bg-hover-subtle transition-colors"
                   aria-label="Delete homework"
                 >
                   <Trash2 size={16} />

@@ -12,15 +12,42 @@
     from { transform: scale(0.96); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
+
+  /* Custom Semantic Colors for v4 Theme System */
+  --color-page: var(--bg-base);
+  --color-surface: var(--bg-surface);
+  --color-surface-elevated: var(--bg-elevated);
+  --color-divider: var(--border-custom);
+  --color-primary-text: var(--text-primary);
+  --color-secondary-text: var(--text-secondary);
+  --color-input: var(--input-bg);
+  --color-hover-subtle: var(--bg-hover);
 }
 
 :root {
-  --background: #020617; /* Slate 950 */
-  --foreground: #f8fafc; /* Slate 50 */
+  --bg-base: #ffffff;
+  --bg-surface: #f8fafc;        /* slate-50 */
+  --bg-elevated: #ffffff;
+  --border-custom: #e2e8f0;     /* slate-200 */
+  --text-primary: #0f172a;      /* slate-900 */
+  --text-secondary: #64748b;    /* slate-500 */
+  --input-bg: #ffffff;
+  --bg-hover: #f1f5f9;          /* slate-100 */
+}
+
+.dark {
+  --bg-base: #020617;           /* slate-950 */
+  --bg-surface: #0f172a;        /* slate-900 */
+  --bg-elevated: #1e293b;       /* slate-800 */
+  --border-custom: #1e293b;     /* slate-800 */
+  --text-primary: #f8fafc;      /* slate-50 */
+  --text-secondary: #94a3b8;    /* slate-400 */
+  --input-bg: #020617;          /* slate-950 */
+  --bg-hover: #1e293b;          /* slate-800 */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-base);
+  color: var(--text-primary);
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }

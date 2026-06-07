@@ -21,9 +21,9 @@ export function ThreadGallery({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-16 px-4">
-        <ImageIcon className="h-10 w-10 text-slate-700 mb-3" />
-        <h4 className="font-semibold text-slate-300 text-sm">No solutions uploaded</h4>
-        <p className="text-slate-500 text-2xs mt-1 max-w-[240px]">
+        <ImageIcon className="h-10 w-10 text-secondary-text/60 mb-3" />
+        <h4 className="font-semibold text-primary-text text-sm">No solutions uploaded</h4>
+        <p className="text-secondary-text text-2xs mt-1 max-w-[240px]">
           Solution images shared in the discussion thread will compile here.
         </p>
       </div>
@@ -42,8 +42,8 @@ export function ThreadGallery({
               else onOpenLightbox(attachment.url);
             }}
             className={cn(
-              'relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-square cursor-pointer transition-all duration-300 flex flex-col group',
-              isBlurred ? 'ring-1 ring-amber-500/30' : 'hover:border-slate-600 hover:scale-[1.02]'
+              'relative rounded-xl overflow-hidden border border-divider bg-input aspect-square cursor-pointer transition-all duration-300 flex flex-col group',
+              isBlurred ? 'ring-1 ring-amber-500/30' : 'hover:border-divider/80 hover:scale-[1.02]'
             )}
           >
             {/* Image */}
@@ -58,18 +58,18 @@ export function ThreadGallery({
               />
 
               {isBlurred && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-slate-950/40">
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-page/40">
                   <EyeOff size={16} className="text-amber-400 mb-1" />
                   <span className="text-4xs font-extrabold text-amber-400 tracking-wide uppercase">Spoiler</span>
-                  <span className="text-5xs text-slate-300 mt-0.5">Click to reveal</span>
+                  <span className="text-5xs text-primary-text mt-0.5">Click to reveal</span>
                 </div>
               )}
             </div>
 
             {/* Caption */}
-            <div className="p-2 bg-slate-900 border-t border-slate-800/80 flex items-center justify-between">
-              <span className="text-4xs font-bold text-slate-300 truncate flex-1 pr-1">{authorName}</span>
-              <span className="text-5xs text-slate-500 font-medium whitespace-nowrap">
+            <div className="p-2 bg-surface border-t border-divider/80 flex items-center justify-between">
+              <span className="text-4xs font-bold text-primary-text truncate flex-1 pr-1">{authorName}</span>
+              <span className="text-5xs text-secondary-text font-medium whitespace-nowrap">
                 {parseLocalDateTime(createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
               </span>
             </div>
@@ -78,7 +78,7 @@ export function ThreadGallery({
             {attachment.isSpoiler && !isBlurred && (
               <button
                 onClick={(e) => { e.stopPropagation(); onRevealSpoiler(attachment.id); }}
-                className="absolute top-1.5 right-1.5 p-1 bg-slate-950/80 border border-slate-800 rounded-md text-amber-400 hover:text-amber-300 hover:bg-slate-900 transition"
+                className="absolute top-1.5 right-1.5 p-1 bg-input/80 border border-divider rounded-md text-amber-400 hover:text-amber-300 hover:bg-hover-subtle transition"
                 title="Hide spoiler"
               >
                 <Eye size={10} />

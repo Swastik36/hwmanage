@@ -56,14 +56,14 @@ export function ExpandableTabs({
   activeTab,
   onChange,
 }: ExpandableTabsProps) {
+  const [prevActiveTab, setPrevActiveTab] = React.useState<number | null | undefined>(activeTab);
   const [selected, setSelected] = React.useState<number | null>(activeTab ?? null);
   const outsideClickRef = React.useRef<HTMLDivElement>(null!);
 
-  React.useEffect(() => {
-    if (activeTab !== undefined) {
-      setSelected(activeTab);
-    }
-  }, [activeTab]);
+  if (activeTab !== prevActiveTab) {
+    setPrevActiveTab(activeTab);
+    setSelected(activeTab ?? null);
+  }
 
   useOnClickOutside(outsideClickRef, () => {
     // We only reset to null on click outside if we're not using it as a persistent route indicator
@@ -79,14 +79,14 @@ export function ExpandableTabs({
   };
 
   const Separator = () => (
-    <div className="mx-1 h-[24px] w-[1.2px] bg-slate-800" aria-hidden="true" />
+    <div className="mx-1 h-[24px] w-[1.2px] bg-divider" aria-hidden="true" />
   );
 
   return (
     <div
       ref={outsideClickRef}
       className={cn(
-        "flex flex-wrap items-center gap-2 rounded-2xl border border-slate-850 bg-slate-950 p-1 shadow-sm",
+        "flex flex-wrap items-center gap-2 rounded-2xl border border-divider bg-input p-1 shadow-sm",
         className
       )}
     >
@@ -108,8 +108,8 @@ export function ExpandableTabs({
             className={cn(
               "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300 cursor-pointer",
               selected === index
-                ? cn("bg-slate-800", activeColor)
-                : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+                ? cn("bg-hover-subtle", activeColor)
+                : "text-secondary-text hover:bg-hover-subtle hover:text-primary-text"
             )}
           >
             <Icon size={20} />

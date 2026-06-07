@@ -111,7 +111,11 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
   const toggleRevealSpoiler = (id: string) => {
     setRevealedSpoilers((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };
@@ -180,7 +184,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
       setAttachments((prev) => [...prev, ...processed]);
     } catch (err) {
       console.error(err);
-      // Clean up object URLs created during this failed batch to prevent memory leaks
+      // Clean up object URLs created during this failed failed batch to prevent memory leaks
       localBatchUrls.forEach((url) => URL.revokeObjectURL(url));
       objectUrlsRef.current = objectUrlsRef.current.filter((url) => !localBatchUrls.includes(url));
       alert('Failed to process one or more files.');
@@ -241,7 +245,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300',
+          'fixed inset-0 z-50 bg-page/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
@@ -250,12 +254,12 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
       {/* Drawer panel */}
       <div
         className={cn(
-          'fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-slate-900 border-l border-slate-800 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out',
+          'fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-surface border-l border-divider flex flex-col shadow-2xl transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* ── Header ── */}
-        <div className="p-5 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-10 flex flex-col gap-3">
+        <div className="p-5 border-b border-divider bg-surface/90 backdrop-blur-md sticky top-0 z-10 flex flex-col gap-3">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-wrap">
               {subject && (
@@ -267,17 +271,17 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                 {task.priority}
               </span>
             </div>
-            <button onClick={onClose} className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" aria-label="Close">
+            <button onClick={onClose} className="p-1 text-secondary-text hover:text-primary-text rounded-lg hover:bg-hover-subtle transition" aria-label="Close">
               <X size={20} />
             </button>
           </div>
 
           <div className="flex items-start gap-3 justify-between">
             <div className="flex-1 min-w-0">
-              <h2 className={cn('text-lg font-bold text-white leading-snug truncate', task.completed && 'line-through text-slate-500 font-normal')}>
+              <h2 className={cn('text-lg font-bold text-primary-text leading-snug truncate', task.completed && 'line-through text-secondary-text font-normal')}>
                 {task.title}
               </h2>
-              {task.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{task.description}</p>}
+              {task.description && <p className="text-xs text-secondary-text mt-1 line-clamp-2">{task.description}</p>}
             </div>
 
             <button
@@ -286,22 +290,22 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition active:scale-[0.98]',
                 task.completed
                   ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-                  : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                  : 'bg-input/50 border-divider text-secondary-text hover:text-primary-text hover:border-divider'
               )}
             >
-              <CheckCircle2 size={14} className={task.completed ? 'text-emerald-400' : 'text-slate-500'} />
+              <CheckCircle2 size={14} className={task.completed ? 'text-emerald-400' : 'text-secondary-text'} />
               <span>{task.completed ? 'Done' : 'Mark Done'}</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-3 text-2xs text-slate-400 border-t border-slate-800/60 pt-2.5 mt-1">
-            <span className="flex items-center gap-1"><Calendar size={12} className="text-slate-500" /><span>Due: {formatDate(task.dueDate)}</span></span>
-            <span className="flex items-center gap-1"><Clock size={12} className="text-slate-500" /><span>Status: {getDueDateStatusLabel(task.dueDate, task.completed)}</span></span>
+          <div className="flex items-center gap-3 text-2xs text-secondary-text border-t border-divider/60 pt-2.5 mt-1">
+            <span className="flex items-center gap-1"><Calendar size={12} className="text-secondary-text" /><span>Due: {formatDate(task.dueDate)}</span></span>
+            <span className="flex items-center gap-1"><Clock size={12} className="text-secondary-text" /><span>Status: {getDueDateStatusLabel(task.dueDate, task.completed)}</span></span>
           </div>
         </div>
 
         {/* ── Tab bar ── */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40">
+        <div className="flex border-b border-divider bg-page/40">
           {([
             { key: 'chat', icon: <MessageSquare size={14} />, label: `Discussion (${task.messages?.length ?? 0})` },
             { key: 'gallery', icon: <ImageIcon size={14} />, label: `Solutions Gallery (${imageAttachments.length})` },
@@ -312,8 +316,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
               className={cn(
                 'flex-1 py-3 text-center text-xs font-bold transition flex items-center justify-center gap-2',
                 activeTab === key
-                  ? 'text-emerald-400 border-b-2 border-emerald-400 bg-slate-900/20'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-emerald-400 border-b-2 border-emerald-400 bg-surface/20'
+                  : 'text-secondary-text hover:text-primary-text'
               )}
             >
               {icon}<span>{label}</span>
@@ -322,19 +326,19 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
         </div>
 
         {/* ── Body ── */}
-        <div className="flex-1 overflow-y-auto bg-slate-950/20 flex flex-col min-h-0">
+        <div className="flex-1 overflow-y-auto bg-page/20 flex flex-col min-h-0">
           {activeTab === 'chat' ? (
             <>
               {/* Filter row */}
-              <div className="p-3 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center text-2xs">
-                <span className="text-slate-400 font-semibold uppercase tracking-wider">Messages Stream</span>
+              <div className="p-3 border-b border-divider bg-surface/50 flex justify-between items-center text-2xs">
+                <span className="text-secondary-text font-semibold uppercase tracking-wider">Messages Stream</span>
                 <button
                   onClick={() => setFilterImagesOnly((p) => !p)}
                   className={cn(
                     'flex items-center gap-1.5 px-2 py-1 rounded-md border transition active:scale-[0.98]',
                     filterImagesOnly
                       ? 'bg-indigo-500/15 border-indigo-500/30 text-indigo-400'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                      : 'bg-surface border-divider text-secondary-text hover:text-primary-text'
                   )}
                 >
                   <ImageIcon size={11} /><span>Images only</span>
@@ -345,9 +349,9 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
               <div className="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col min-h-0">
                 {filteredMessages.length === 0 ? (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-                    <MessageSquare className="h-10 w-10 text-slate-700 mb-3" />
-                    <h4 className="font-semibold text-slate-300 text-sm">No discussions yet</h4>
-                    <p className="text-slate-500 text-2xs mt-1 max-w-[240px]">
+                    <MessageSquare className="h-10 w-10 text-secondary-text/60 mb-3" />
+                    <h4 className="font-semibold text-primary-text text-sm">No discussions yet</h4>
+                    <p className="text-secondary-text text-2xs mt-1 max-w-[240px]">
                       {filterImagesOnly
                         ? 'No images have been shared in this thread yet.'
                         : 'Start the study group discussion by typing a question or uploading a working sketch.'}
@@ -368,33 +372,33 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
               </div>
 
               {/* Input form */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-800 bg-slate-900 flex flex-col gap-2.5">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-divider bg-surface flex flex-col gap-2.5">
                 {/* Anon identity badge */}
                 <div className="flex gap-2 items-center text-xs">
-                  <span className="text-slate-500">Posting as:</span>
+                  <span className="text-secondary-text">Posting as:</span>
                   <span className="font-mono font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded">
                     {authorName || '…'}
                   </span>
-                  <span className="text-slate-600 italic">(your anonymous ID)</span>
+                  <span className="text-secondary-text/80 italic">(your anonymous ID)</span>
                 </div>
 
                 {/* Attachment previews */}
                 {attachments.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-2 bg-slate-950/60 border border-slate-800/80 rounded-xl">
+                  <div className="flex flex-wrap gap-2 p-2 bg-input/60 border border-divider/80 rounded-xl">
                     {attachments.map((att, i) => {
                       const isImage = att.file.type.startsWith('image/');
                       return (
-                        <div key={i} className="relative flex items-center bg-slate-900 border border-slate-800 rounded-lg p-1.5 pr-8 h-14 max-w-[200px] shrink-0">
+                        <div key={i} className="relative flex items-center bg-surface border border-divider rounded-lg p-1.5 pr-8 h-14 max-w-[200px] shrink-0">
                           {isImage ? (
                             <img src={att.previewUrl} alt="preview" className="w-10 h-10 object-cover rounded" />
                           ) : (
-                            <div className="w-10 h-10 bg-slate-950 rounded flex items-center justify-center text-slate-400 border border-slate-800/60 shrink-0">
+                            <div className="w-10 h-10 bg-input rounded flex items-center justify-center text-secondary-text border border-divider/60 shrink-0">
                               <FileText size={18} className="text-emerald-400" />
                             </div>
                           )}
                           <div className="ml-2 flex flex-col justify-center min-w-0 flex-1">
-                            <span className="text-3xs font-semibold text-slate-200 truncate">{att.file.name}</span>
-                            <span className="text-[10px] text-slate-500 shrink-0">{(att.file.size / 1024).toFixed(1)} KB</span>
+                            <span className="text-3xs font-semibold text-primary-text truncate">{att.file.name}</span>
+                            <span className="text-[10px] text-secondary-text shrink-0">{(att.file.size / 1024).toFixed(1)} KB</span>
                           </div>
                           <button
                             type="button"
@@ -420,7 +424,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                           type="checkbox"
                           checked={isSpoilerChecked}
                           onChange={(e) => setIsSpoilerChecked(e.target.checked)}
-                          className="rounded text-amber-500 bg-slate-950 focus:ring-amber-500/20 w-3.5 h-3.5"
+                          className="rounded text-amber-500 bg-input focus:ring-amber-500/20 w-3.5 h-3.5"
                         />
                         <span className="text-3xs uppercase tracking-wider">Blur as Spoiler</span>
                       </label>
@@ -434,7 +438,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isCompressing}
-                    className={cn('p-3 bg-slate-950 border border-slate-800 text-slate-400 rounded-xl hover:text-emerald-400 hover:border-slate-700 transition active:scale-[0.97]', isCompressing && 'opacity-50 cursor-not-allowed')}
+                    className={cn('p-3 bg-input border border-divider text-secondary-text rounded-xl hover:text-emerald-400 hover:border-divider transition active:scale-[0.97]', isCompressing && 'opacity-50 cursor-not-allowed')}
                     title="Attach file (images, PDFs, text)"
                   >
                     <Paperclip size={18} />
@@ -445,7 +449,7 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                     placeholder={isCompressing ? 'Processing files…' : 'Ask a question or share a solution…'}
                     rows={1}
                     disabled={isCompressing}
-                    className="flex-1 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3.5 py-2.5 text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 resize-none min-h-[40px] max-h-[120px]"
+                    className="flex-1 bg-input border border-divider text-primary-text rounded-xl px-3.5 py-2.5 text-xs placeholder:text-secondary-text focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 resize-none min-h-[40px] max-h-[120px]"
                     onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(e); } }}
                   />
                   <button
@@ -472,18 +476,18 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
       {/* Lightbox */}
       {lightboxImage && (
         <div
-          className="fixed inset-0 z-[60] bg-slate-950/90 flex items-center justify-center p-4 backdrop-blur-md"
+          className="fixed inset-0 z-[60] bg-page/90 flex items-center justify-center p-4 backdrop-blur-md"
           onClick={() => setLightboxImage(null)}
         >
           <button
             onClick={() => setLightboxImage(null)}
-            className="absolute top-4 right-4 p-2 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition z-[70]"
+            className="absolute top-4 right-4 p-2 bg-surface border border-divider text-secondary-text hover:text-primary-text rounded-xl hover:bg-hover-subtle transition z-[70]"
             aria-label="Close"
           >
             <X size={20} />
           </button>
           <div
-            className="relative max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/50 shadow-2xl"
+            className="relative max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border border-divider bg-input/50 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <img src={lightboxImage} alt="Full size attachment" className="max-w-full max-h-[85vh] object-contain rounded-2xl select-none" />
