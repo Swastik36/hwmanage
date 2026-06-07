@@ -4,6 +4,7 @@ import React from 'react';
 import { cn, parseLocalDateTime } from '@/lib/utils';
 import { Eye, EyeOff, Image as ImageIcon } from 'lucide-react';
 import { GalleryItem } from './threadUtils';
+import Image from 'next/image';
 
 interface ThreadGalleryProps {
   items: GalleryItem[];
@@ -48,9 +49,12 @@ export function ThreadGallery({
           >
             {/* Image */}
             <div className="relative flex-1 min-h-0 w-full overflow-hidden">
-              <img
+              <Image
                 src={attachment.url}
                 alt="homework solution"
+                fill
+                sizes="(max-width: 640px) 50vw, 33vw"
+                unoptimized
                 className={cn(
                   'w-full h-full object-cover transition-all duration-500',
                   isBlurred && 'blur-md brightness-50 scale-105'

@@ -5,6 +5,7 @@ import { ThreadMessage } from '@/types';
 import { cn, parseLocalDateTime } from '@/lib/utils';
 import { Eye, EyeOff, FileText } from 'lucide-react';
 import { getInitials, getAvatarColorClass, parseAttachmentUrl } from './threadUtils';
+import Image from 'next/image';
 
 interface ThreadMessageBubbleProps {
   msg: ThreadMessage;
@@ -75,9 +76,12 @@ export function ThreadMessageBubble({
                   )}
                 >
                   {parsed.isImage ? (
-                    <img
+                    <Image
                       src={att.url}
                       alt="discussion attachment"
+                      fill
+                      sizes="112px"
+                      unoptimized
                       className={cn(
                         'w-full h-full object-cover transition-all duration-500',
                         isBlurred && 'blur-md brightness-50 scale-105'

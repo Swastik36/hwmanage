@@ -13,6 +13,7 @@ import {
   compressImage, blobToBase64, formatDate, getDueDateStatusLabel,
   getSubjectColorPill, getPriorityBadge, GalleryItem, parseAttachmentUrl,
 } from './threadUtils';
+import Image from 'next/image';
 
 interface ThreadDrawerProps {
   isOpen: boolean;
@@ -404,7 +405,14 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                       return (
                         <div key={i} className="relative flex items-center bg-surface border border-divider rounded-lg p-1.5 pr-8 h-14 max-w-[200px] shrink-0">
                           {isImage ? (
-                            <img src={att.previewUrl} alt="preview" className="w-10 h-10 object-cover rounded" />
+                            <Image
+                              src={att.previewUrl}
+                              alt="preview"
+                              width={40}
+                              height={40}
+                              unoptimized
+                              className="w-10 h-10 object-cover rounded"
+                            />
                           ) : (
                             <div className="w-10 h-10 bg-input rounded flex items-center justify-center text-secondary-text border border-divider/60 shrink-0">
                               <FileText size={18} className="text-emerald-400" />
@@ -516,7 +524,14 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
             className="relative max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border border-divider bg-input/50 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <img src={lightboxImage} alt="Full size attachment" className="max-w-full max-h-[85vh] object-contain rounded-2xl select-none" />
+            <Image
+              src={lightboxImage}
+              alt="Full size attachment"
+              width={1200}
+              height={1200}
+              unoptimized
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl select-none"
+            />
           </div>
         </div>
       )}
