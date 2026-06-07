@@ -448,7 +448,14 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                 )}
 
                 <div className="flex items-end gap-2">
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*,application/pdf,text/*" multiple className="hidden" />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                    multiple
+                    className="hidden"
+                  />
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
