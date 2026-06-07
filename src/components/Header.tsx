@@ -76,18 +76,16 @@ export function Header() {
 
           {/* Navigation Links */}
           <div className="flex items-center gap-1.5">
-            {pathname === '/' && (
-              <button
-                onClick={() => setSidebarOpen((prev) => !prev)}
-                className={cn(
-                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
-                  sidebarOpen && 'text-emerald-400 bg-hover-subtle'
-                )}
-                aria-label="Toggle sidebar menu"
-              >
-                <Menu size={20} />
-              </button>
-            )}
+            <button
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              className={cn(
+                'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
+                sidebarOpen && 'text-emerald-400 bg-hover-subtle'
+              )}
+              aria-label="Toggle sidebar menu"
+            >
+              <Menu size={20} />
+            </button>
             <div className="hidden md:block">
               <ExpandableTabs
                 tabs={navItems.map((item) => ({
