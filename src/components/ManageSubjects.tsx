@@ -175,7 +175,7 @@ export default function ManageSubjects() {
                         type="button"
                         onClick={() => setActiveCategory(tab)}
                         className={cn(
-                          'flex-1 sm:flex-none py-0.5 px-2.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
+                          'flex-1 sm:flex-none px-3 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
                           activeCategory === tab
                             ? 'bg-slate-700/70 text-slate-100 shadow-sm'
                             : 'text-slate-500 hover:text-slate-300'
