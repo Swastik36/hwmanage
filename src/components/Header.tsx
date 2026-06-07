@@ -82,7 +82,7 @@ export function Header() {
             </Link>
 
             {/* Navigation Links */}
-            <div className="flex items-center gap-1.5 md:flex-1 md:justify-center">
+            <div className="flex items-center gap-1.5 flex-1 md:justify-center">
               {mounted && pathname === '/' && (
                 <button
                   onClick={() => setSidebarOpen((prev) => !prev)}
