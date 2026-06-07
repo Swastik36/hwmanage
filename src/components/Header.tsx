@@ -123,7 +123,7 @@ export function Header() {
       </header>
 
       {/* Bottom Navigation Bar for Mobile */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-divider bg-page/95 backdrop-blur-md h-16 flex items-center justify-around md:hidden px-6">
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-divider bg-page/95 backdrop-blur-md min-h-16 pb-[env(safe-area-inset-bottom)] flex items-center justify-around md:hidden px-6">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;

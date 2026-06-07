@@ -306,7 +306,7 @@ export default function CreatorDashboard() {
   );
 
   return (
-    <main className="flex flex-1 bg-page">
+    <main className="flex flex-col md:flex-row flex-1 bg-page">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-72 shrink-0 border-r border-divider bg-surface/60 flex-col p-3 sticky top-16 h-[calc(100vh-64px)]">
         {renderSidebarContents()}
@@ -318,7 +318,7 @@ export default function CreatorDashboard() {
       </MobileDrawer>
 
       {/* Right content */}
-      <div className="flex-1 pt-8 pb-20 md:pb-8 px-6 lg:px-8 space-y-6">
+      <div className="flex-1 min-w-0 pt-8 pb-20 md:pb-8 px-6 lg:px-8 space-y-6">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-2xl font-bold text-primary-text tracking-tight">Creator Dashboard</h2>
           <p className="text-sm text-secondary-text">

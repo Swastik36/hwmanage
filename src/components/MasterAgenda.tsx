@@ -121,7 +121,7 @@ export default function MasterAgenda() {
 
 
   return (
-    <main className="flex-1 bg-page pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
+    <main className="flex-1 min-w-0 bg-page pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         
         {/* Header and Toggle Controls */}
@@ -146,7 +146,7 @@ export default function MasterAgenda() {
               <button
                 onClick={() => handleViewModeChange('date')}
                 className={cn(
-                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-2 sm:px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'date'
                     ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
                     : 'text-secondary-text hover:text-primary-text'
@@ -158,7 +158,7 @@ export default function MasterAgenda() {
               <button
                 onClick={() => handleViewModeChange('subject')}
                 className={cn(
-                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
+                  'flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 rounded-md px-2 sm:px-4 py-1.5 text-xs font-bold transition-all active:scale-[0.98]',
                   viewMode === 'subject'
                     ? 'bg-hover-subtle border border-divider text-primary-text shadow-md'
                     : 'text-secondary-text hover:text-primary-text'
