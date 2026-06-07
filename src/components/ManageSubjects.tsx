@@ -94,7 +94,7 @@ export default function ManageSubjects() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Add Subject Column */}
           <div className="md:col-span-1">
-            <Card className="border-slate-800 bg-slate-900/80 sticky top-24">
+            <Card className="border-slate-800 bg-slate-900/80 md:sticky md:top-24">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                   <Tag size={18} className="text-emerald-400" />
@@ -159,7 +159,7 @@ export default function ManageSubjects() {
 
               {/* Category tabs */}
               {subjects.length > 0 && (
-                <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5 self-start sm:self-auto">
+                <div className="flex gap-0.5 rounded-lg border border-slate-700/40 bg-slate-900/60 p-0.5 w-full sm:w-auto">
                   {(['all', 'school', 'coaching'] as const).map((tab) => {
                     const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
                     
@@ -175,7 +175,7 @@ export default function ManageSubjects() {
                         type="button"
                         onClick={() => setActiveCategory(tab)}
                         className={cn(
-                          'py-0.5 px-2.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
+                          'flex-1 sm:flex-none py-0.5 px-2.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
                           activeCategory === tab
                             ? 'bg-slate-700/70 text-slate-100 shadow-sm'
                             : 'text-slate-500 hover:text-slate-300'
@@ -191,7 +191,7 @@ export default function ManageSubjects() {
 
             {/* Search Input */}
             {subjects.length > 0 && (
-              <div className="relative max-w-sm">
+              <div className="relative w-full sm:max-w-sm">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
                   type="text"
