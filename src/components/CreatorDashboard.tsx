@@ -204,6 +204,8 @@ export default function CreatorDashboard() {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
               <input
                 type="text"
+                id="subject-search"
+                name="subject-search"
                 placeholder="Search subjects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

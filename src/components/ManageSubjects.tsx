@@ -164,6 +164,8 @@ export default function ManageSubjects() {
                     <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-text" />
                     <input
                       type="text"
+                      id="subject-search-manage"
+                      name="subject-search-manage"
                       placeholder="Search subjects..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
