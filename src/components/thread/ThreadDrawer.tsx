@@ -41,7 +41,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
 
   const authorName = useAnonIdentity();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
 
   // Auto-scroll to bottom when new messages arrive
@@ -125,7 +126,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
     if (!e.target.files) return;
 
     const selectedFiles = Array.from(e.target.files);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (imageInputRef.current) imageInputRef.current.value = '';
+    if (docInputRef.current) docInputRef.current.value = '';
     setIsCompressing(true);
 
     const MAX_SIZE = 5 * 1024 * 1024;
@@ -204,7 +206,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
       alert('Failed to process one or more files.');
     } finally {
       setIsCompressing(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (imageInputRef.current) imageInputRef.current.value = '';
+      if (docInputRef.current) docInputRef.current.value = '';
     }
   };
 
@@ -250,7 +253,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
     // Clear revealed spoilers — fake client-side IDs are now stale
     // (Supabase returns real UUIDs after save, so the set would never match)
     setRevealedSpoilers(new Set());
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (imageInputRef.current) imageInputRef.current.value = '';
+    if (docInputRef.current) docInputRef.current.value = '';
   };
 
   if (!task) return null;
@@ -431,7 +435,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                                 objectUrlsRef.current = objectUrlsRef.current.filter((url) => url !== removed.previewUrl);
                               }
                               setAttachments((p) => p.filter((_, idx) => idx !== i));
-                              if (fileInputRef.current) fileInputRef.current.value = '';
+                              if (imageInputRef.current) imageInputRef.current.value = '';
+                              if (docInputRef.current) docInputRef.current.value = '';
                             }}
                             className="absolute -top-1.5 -right-1.5 p-0.5 bg-red-500 text-white rounded-full hover:bg-red-400 transition shadow-md"
                             title="Remove attachment"
@@ -458,20 +463,39 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                 <div className="flex items-end gap-2">
                   <input
                     type="file"
-                    id={task ? `thread-file-upload-${task.id}` : 'thread-file-upload'}
-                    name={task ? `thread-file-upload-${task.id}` : 'thread-file-upload'}
-                    ref={fileInputRef}
+                    id={task ? `thread-image-upload-${task.id}` : 'thread-image-upload'}
+                    name={task ? `thread-image-upload-${task.id}` : 'thread-image-upload'}
+                    ref={imageInputRef}
                     onChange={handleFileChange}
-                    accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                  />
+                  <input
+                    type="file"
+                    id={task ? `thread-doc-upload-${task.id}` : 'thread-doc-upload'}
+                    name={task ? `thread-doc-upload-${task.id}` : 'thread-doc-upload'}
+                    ref={docInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx,.txt"
                     multiple
                     className="hidden"
                   />
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => imageInputRef.current?.click()}
                     disabled={isCompressing}
                     className={cn('p-3 bg-input border border-divider text-secondary-text rounded-xl hover:text-emerald-400 hover:border-divider transition active:scale-[0.97]', isCompressing && 'opacity-50 cursor-not-allowed')}
-                    title="Attach file (images, PDFs, text)"
+                    title="Attach images"
+                  >
+                    <ImageIcon size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => docInputRef.current?.click()}
+                    disabled={isCompressing}
+                    className={cn('p-3 bg-input border border-divider text-secondary-text rounded-xl hover:text-emerald-400 hover:border-divider transition active:scale-[0.97]', isCompressing && 'opacity-50 cursor-not-allowed')}
+                    title="Attach documents (PDF, Word, Text)"
                   >
                     <Paperclip size={18} />
                   </button>
