@@ -81,12 +81,12 @@ export function Header() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-1.5 flex-1 justify-end md:justify-center">
+          <div className="flex items-center gap-1.5 flex-1 md:justify-center">
             {mounted && pathname === '/' && (
               <button
                 onClick={() => setSidebarOpen((prev) => !prev)}
                 className={cn(
-                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden',
+                  'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden mr-auto',
                   sidebarOpen && 'text-emerald-400 bg-hover-subtle'
                 )}
                 aria-label="Toggle sidebar menu"

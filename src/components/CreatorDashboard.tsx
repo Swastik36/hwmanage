@@ -178,8 +178,8 @@ export default function CreatorDashboard() {
   };
 
   const renderSidebarContents = () => (
-    <>
-      <div className="mb-4 flex items-center justify-between">
+    <div className="flex flex-col h-full min-h-0">
+      <div className="mb-4 flex items-center justify-between hidden md:flex">
         <div>
           <h2 className="text-lg font-semibold text-primary-text">Subjects</h2>
           <p className="mt-1 text-xs text-secondary-text">Select one to open the panel.</p>
@@ -196,7 +196,7 @@ export default function CreatorDashboard() {
           No subjects yet. Add one from subject settings.
         </div>
       ) : (
-        <>
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Search and Category Filters */}
           <div className="mb-4 space-y-2.5">
             {/* Search Bar */}
@@ -240,7 +240,7 @@ export default function CreatorDashboard() {
                       setSelectedSubjectId(null);
                     }}
                     className={cn(
-                      'flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
+                      'flex-grow sm:flex-grow-0 flex-1 px-2.5 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none',
                       activeCategory === tab
                         ? 'bg-hover-subtle text-primary-text'
                         : 'text-secondary-text hover:text-primary-text'
@@ -258,8 +258,8 @@ export default function CreatorDashboard() {
               No matching subjects found.
             </div>
           ) : (
-            <div className="space-y-3">
-              <div className="flex flex-col gap-1.5 max-h-[420px] overflow-y-auto pr-1">
+            <div className="space-y-3 flex-1 flex flex-col min-h-0">
+              <div className="flex flex-col gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1">
                 {displayedSubjects.map((subject) => {
                   const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
                   const completedCount = subjectTasks.filter((item) => item.completed).length;
@@ -283,7 +283,7 @@ export default function CreatorDashboard() {
               </div>
 
               {filteredSubjects.length > SUBJECT_VISIBLE_COUNT && (
-                <div className="relative flex items-center justify-center">
+                <div className="relative flex items-center justify-center pt-1 shrink-0">
                   <div className="absolute inset-x-0 top-1/2 h-px bg-divider" />
                   <button
                     type="button"
@@ -300,15 +300,15 @@ export default function CreatorDashboard() {
               )}
             </div>
           )}
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 
   return (
-    <main className="flex min-h-screen bg-page">
+    <main className="flex flex-1 bg-page">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-72 shrink-0 border-r border-divider bg-surface/60 flex-col p-3">
+      <aside className="hidden md:flex w-72 shrink-0 border-r border-divider bg-surface/60 flex-col p-3 sticky top-16 h-[calc(100vh-64px)]">
         {renderSidebarContents()}
       </aside>
 

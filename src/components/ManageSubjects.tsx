@@ -82,7 +82,7 @@ export default function ManageSubjects() {
 
 
   return (
-    <main className="min-h-screen bg-page pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
+    <main className="flex-1 bg-page pt-8 pb-20 md:py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         
         {/* Header */}
@@ -154,63 +154,63 @@ export default function ManageSubjects() {
 
           {/* Subjects List Column */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3">
               <h3 className="text-lg font-bold text-primary-text">Current Subjects ({subjects.length})</h3>
 
-              {/* Category tabs */}
               {subjects.length > 0 && (
-                <div className="flex gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5 w-full sm:w-auto">
-                  {(['all', 'school', 'coaching'] as const).map((tab) => {
-                    const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
-                    
-                    const count = subjects.filter((s) => {
-                      if (tab === 'all') return true;
-                      const isCoaching = isCoachingSubject(s.name);
-                      return tab === 'coaching' ? isCoaching : !isCoaching;
-                    }).length;
-
-                    return (
+                <div className="flex flex-col sm:flex-row gap-3 w-full justify-between items-stretch sm:items-center bg-surface/30 p-3 rounded-xl border border-divider/40">
+                  {/* Search Input */}
+                  <div className="relative w-full sm:max-w-xs">
+                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-text" />
+                    <input
+                      type="text"
+                      placeholder="Search subjects..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-input border border-divider text-primary-text rounded-lg pl-9 pr-8 py-2.5 text-xs placeholder:text-secondary-text focus:outline-none focus:border-emerald-500/50 transition"
+                    />
+                    {searchQuery && (
                       <button
-                        key={tab}
                         type="button"
-                        onClick={() => setActiveCategory(tab)}
-                        className={cn(
-                          'flex-1 sm:flex-none px-3 py-0.5 rounded-md text-xs font-normal transition-all duration-150 cursor-pointer select-none text-center',
-                          activeCategory === tab
-                            ? 'bg-hover-subtle text-primary-text shadow-sm'
-                            : 'text-secondary-text hover:text-primary-text'
-                        )}
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary-text transition"
                       >
-                        {label} <span className={cn('text-[10px]', activeCategory === tab ? 'text-secondary-text' : 'text-secondary-text/60')}>{count}</span>
+                        <X size={12} />
                       </button>
-                    );
-                  })}
+                    )}
+                  </div>
+
+                  {/* Category tabs */}
+                  <div className="flex gap-0.5 rounded-lg border border-divider/40 bg-surface/60 p-0.5 w-full sm:w-auto">
+                    {(['all', 'school', 'coaching'] as const).map((tab) => {
+                      const label = tab === 'all' ? 'All' : tab === 'school' ? 'School' : 'Coaching';
+                      
+                      const count = subjects.filter((s) => {
+                        if (tab === 'all') return true;
+                        const isCoaching = isCoachingSubject(s.name);
+                        return tab === 'coaching' ? isCoaching : !isCoaching;
+                      }).length;
+
+                      return (
+                        <button
+                          key={tab}
+                          type="button"
+                          onClick={() => setActiveCategory(tab)}
+                          className={cn(
+                            'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer select-none text-center',
+                            activeCategory === tab
+                              ? 'bg-hover-subtle text-primary-text shadow-sm'
+                              : 'text-secondary-text hover:text-primary-text'
+                          )}
+                        >
+                          {label} <span className={cn('text-[10px] ml-1', activeCategory === tab ? 'text-secondary-text' : 'text-secondary-text/60')}>{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* Search Input */}
-            {subjects.length > 0 && (
-              <div className="relative w-full sm:max-w-sm">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
-                <input
-                  type="text"
-                  placeholder="Search subjects..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-input border border-divider text-primary-text rounded-lg pl-9 pr-8 py-2 text-xs placeholder:text-secondary-text focus:outline-none focus:border-emerald-500/50 transition"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary-text transition"
-                  >
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
-            )}
 
             {filteredSubjects.length === 0 ? (
               <div className="rounded-xl border border-dashed border-divider py-16 text-center text-sm text-secondary-text bg-surface/50">
