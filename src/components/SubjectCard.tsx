@@ -86,7 +86,7 @@ export function SubjectCard({
         aria-pressed={isSelected}
         onClick={onClick}
         className={cn(
-          'flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition-all duration-150 active:scale-[0.99] focus:outline-none',
+          'flex w-full items-center justify-between rounded-lg border px-4 py-3.5 text-left transition-all duration-150 active:scale-[0.99] focus:outline-none',
           isSelected
             ? isCoaching
               ? 'border-amber-500/30 bg-amber-500/10 ring-1 ring-amber-500/15 text-white'

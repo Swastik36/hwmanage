@@ -175,7 +175,7 @@ export default function CreatorDashboard() {
   return (
     <main className="flex min-h-screen bg-slate-950">
       {/* Flush sidebar */}
-      <aside className="w-72 shrink-0 border-r border-slate-800 bg-slate-900/60 flex flex-col p-4">
+      <aside className="w-72 shrink-0 border-r border-slate-800 bg-slate-900/60 flex flex-col p-3">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white">Subjects</h2>
@@ -256,7 +256,7 @@ export default function CreatorDashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1.5 max-h-[420px] overflow-y-auto pr-1">
                   {displayedSubjects.map((subject) => {
                     const subjectTasks = homework.filter((item) => item.subjectId === subject.id);
                     const completedCount = subjectTasks.filter((item) => item.completed).length;
