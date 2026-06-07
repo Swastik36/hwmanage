@@ -458,8 +458,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                 <div className="flex items-end gap-2">
                   <input
                     type="file"
-                    id="thread-file-upload"
-                    name="thread-file-upload"
+                    id={task ? `thread-file-upload-${task.id}` : 'thread-file-upload'}
+                    name={task ? `thread-file-upload-${task.id}` : 'thread-file-upload'}
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
@@ -476,8 +476,8 @@ export function ThreadDrawer({ isOpen, onClose, task, subjects, onAddMessage, on
                     <Paperclip size={18} />
                   </button>
                   <textarea
-                    id="thread-message-input"
-                    name="thread-message"
+                    id={task ? `thread-message-input-${task.id}` : 'thread-message-input'}
+                    name={task ? `thread-message-${task.id}` : 'thread-message'}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder={isCompressing ? 'Processing files…' : 'Ask a question or share a solution…'}
