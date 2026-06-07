@@ -173,7 +173,7 @@ export default function CreatorDashboard() {
   };
 
   return (
-    <main className="py-8 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-2xl font-bold text-white tracking-tight">Creator Dashboard</h2>
@@ -290,7 +290,7 @@ export default function CreatorDashboard() {
                         <button
                           type="button"
                           onClick={() => setExpanded((p) => !p)}
-                          className="relative flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
+                          className="relative z-10 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/50 text-slate-500 hover:text-slate-300 hover:border-slate-700 text-xs font-normal transition-all duration-200 cursor-pointer select-none"
                         >
                           {expanded ? (
                             <><ChevronUp size={12} strokeWidth={1.5} />show less</>

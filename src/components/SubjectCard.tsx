@@ -91,7 +91,7 @@ export function SubjectCard({
             ? isCoaching
               ? 'border-amber-500/30 bg-amber-500/10 ring-1 ring-amber-500/15 text-white'
               : 'border-indigo-500/30 bg-indigo-500/10 ring-1 ring-indigo-500/15 text-white'
-            : 'border-transparent bg-slate-800/30 text-slate-300 hover:bg-slate-700/30 hover:border-slate-700/40'
+            : 'border-slate-700/20 bg-slate-800/20 text-slate-300 hover:bg-slate-800/40 hover:border-slate-700/40'
         )}
       >
         <span className="flex min-w-0 items-center gap-3">
