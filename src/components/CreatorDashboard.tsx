@@ -70,6 +70,7 @@ export default function CreatorDashboard() {
     toggleHomework,
     deleteHomework,
     addMessageToThread,
+    editHomework,
   } = useHomeworkContext();
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -508,6 +509,7 @@ export default function CreatorDashboard() {
               onToggle={toggleHomework}
               onDelete={deleteHomework}
               onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+              onUpdate={editHomework}
             />
           )}
         </section>

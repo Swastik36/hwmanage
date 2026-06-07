@@ -20,6 +20,7 @@ export default function MasterAgenda() {
     deleteHomework,
     addHomework,
     addMessageToThread,
+    editHomework,
   } = useHomeworkContext();
 
   // State for active view layout preference (persistent)
@@ -198,6 +199,7 @@ export default function MasterAgenda() {
                       onToggle={toggleHomework}
                       onDelete={deleteHomework}
                       onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                      onUpdate={editHomework}
                     />
                   )}
                 </div>
@@ -220,6 +222,7 @@ export default function MasterAgenda() {
                       onToggle={toggleHomework}
                       onDelete={deleteHomework}
                       onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                      onUpdate={editHomework}
                     />
                   )}
                 </div>
@@ -242,6 +245,7 @@ export default function MasterAgenda() {
                       onToggle={toggleHomework}
                       onDelete={deleteHomework}
                       onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                      onUpdate={editHomework}
                     />
                   )}
                 </div>
@@ -259,6 +263,7 @@ export default function MasterAgenda() {
                       onToggle={toggleHomework}
                       onDelete={deleteHomework}
                       onSelectTask={(task) => setActiveTaskForThreadId(task.id)}
+                      onUpdate={editHomework}
                     />
                   </div>
                 )}

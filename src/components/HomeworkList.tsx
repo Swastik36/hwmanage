@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Homework, Subject } from '@/types';
-import { Trash2, Calendar, CheckCircle2, Clock, AlertCircle, MessageSquare } from 'lucide-react';
+import { Trash2, Calendar, CheckCircle2, Clock, AlertCircle, MessageSquare, Pencil, Check, X } from 'lucide-react';
 import { cn, parseLocalDate } from '@/lib/utils';
 
 interface HomeworkListProps {
@@ -9,9 +9,43 @@ interface HomeworkListProps {
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onSelectTask?: (task: Homework) => void;
+  onUpdate?: (updated: Homework) => void;
 }
 
-export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectTask }: HomeworkListProps) {
+export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectTask, onUpdate }: HomeworkListProps) {
+  // Local state for inline editing
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDueDate, setEditDueDate] = useState('');
+  const [editPriority, setEditPriority] = useState<Homework['priority']>('medium');
+
+  const startEditing = (item: Homework) => {
+    setEditingId(item.id);
+    setEditTitle(item.title);
+    setEditDueDate(item.dueDate);
+    setEditPriority(item.priority);
+  };
+
+  const handleSave = (item: Homework) => {
+    if (!editTitle.trim()) return;
+    onUpdate?.({
+      ...item,
+      title: editTitle.trim(),
+      dueDate: editDueDate,
+      priority: editPriority,
+    });
+    setEditingId(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, item: Homework) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSave(item);
+    } else if (e.key === 'Escape') {
+      setEditingId(null);
+    }
+  };
+
   // Format Date string helper
   const formatDate = (dateStr: string) => {
     const d = parseLocalDate(dateStr);
@@ -93,6 +127,62 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
         homework.map((item) => {
           const subject = subjects.find((s) => s.id === item.subjectId);
           const dateStatus = getDueDateStatus(item.dueDate, item.completed);
+
+          if (editingId === item.id) {
+            return (
+              <div
+                key={item.id}
+                onKeyDown={(e) => handleKeyDown(e, item)}
+                onClick={(e) => e.stopPropagation()}
+                className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-xl border bg-slate-900/60 border-slate-800"
+              >
+                <div className="flex flex-col sm:flex-row flex-1 gap-2.5 min-w-0">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    autoFocus
+                    className="flex-1 min-w-[150px] bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition"
+                    placeholder="Task title"
+                  />
+                  <input
+                    type="date"
+                    value={editDueDate}
+                    onChange={(e) => setEditDueDate(e.target.value)}
+                    className="w-full sm:w-36 bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
+                  />
+                  <select
+                    value={editPriority}
+                    onChange={(e) => setEditPriority(e.target.value as Homework['priority'])}
+                    className="w-full sm:w-28 bg-slate-950 border border-slate-800 text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500/50 transition"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1 ml-auto sm:ml-4 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleSave(item)}
+                    className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition"
+                    aria-label="Save changes"
+                  >
+                    <Check size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(null)}
+                    className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-850 rounded-lg transition"
+                    aria-label="Cancel editing"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            );
+          }
 
           return (
             <div
@@ -182,9 +272,19 @@ export function HomeworkList({ homework, subjects, onToggle, onDelete, onSelectT
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    startEditing(item);
+                  }}
+                  className="p-2 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
+                  aria-label="Edit homework"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onDelete(item.id);
                   }}
-                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-800 transition-colors"
                   aria-label="Delete homework"
                 >
                   <Trash2 size={16} />
