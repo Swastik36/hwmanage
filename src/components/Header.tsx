@@ -87,12 +87,13 @@ export function Header() {
                 <button
                   onClick={() => setSidebarOpen((prev) => !prev)}
                   className={cn(
-                    'p-2 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden mr-auto',
-                    sidebarOpen && 'text-emerald-400 bg-hover-subtle'
+                    'p-1.5 text-secondary-text hover:text-primary-text hover:bg-hover-subtle rounded-lg transition md:hidden mr-auto flex items-center gap-1 border border-divider/40 bg-surface/20',
+                    sidebarOpen && 'text-emerald-400 bg-hover-subtle border-emerald-500/30'
                   )}
                   aria-label="Toggle sidebar menu"
                 >
-                  <Menu size={20} />
+                  <Menu size={18} />
+                  <span className="text-[11px] font-bold tracking-wider uppercase pr-1">Subjects</span>
                 </button>
               )}
               <div className="hidden md:block">
