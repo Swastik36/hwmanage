@@ -2,13 +2,15 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Calendar, LayoutDashboard, Clock, BookOpen, Menu } from 'lucide-react';
 import { useUIContext } from '@/context/UIContext';
+import { ExpandableTabs } from '@/components/ui/expandable-tabs';
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { sidebarOpen, setSidebarOpen } = useUIContext();
 
   useEffect(() => {
@@ -28,6 +30,25 @@ export function Header() {
     { href: '/agenda', label: 'Agenda', icon: Clock },
     { href: '/subjects', label: 'Subjects', icon: BookOpen },
   ];
+
+  const getActiveTabIdx = () => {
+    switch (pathname) {
+      case '/':
+        return 0;
+      case '/agenda':
+        return 1;
+      case '/subjects':
+        return 2;
+      default:
+        return null;
+    }
+  };
+
+  const handleTabChange = (index: number | null) => {
+    if (index === null) return;
+    const path = navItems[index].href;
+    router.push(path);
+  };
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
@@ -66,28 +87,18 @@ export function Header() {
                 <Menu size={20} />
               </button>
             )}
-            <nav className="hidden md:flex items-center gap-1 sm:gap-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-all active:scale-[0.98]',
-                    isActive
-                      ? 'bg-slate-800 text-white shadow-inner border border-slate-700/50'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+            <div className="hidden md:block">
+              <ExpandableTabs
+                tabs={navItems.map((item) => ({
+                  title: item.label,
+                  icon: item.icon,
+                }))}
+                activeTab={getActiveTabIdx()}
+                onChange={handleTabChange}
+                activeColor="text-emerald-400 font-bold"
+                className="border-slate-800/80 bg-slate-900/40 p-1"
+              />
+            </div>
         </div>
 
           {/* Current Date */}
